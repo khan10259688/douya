@@ -1,6 +1,7 @@
 {
   "pages": [
-    "pages/home/home"
+    "pages/home/home",
+    "pages/weight/weight"
   ],
   "window": {
     "backgroundColor": "#FFF5F5",
@@ -11,5 +12,21 @@
   },
   "sitemapLocation": "sitemap.json",
   "style": "v2",
-  "lazyCodeLoading": "requiredComponents"
+  "lazyCodeLoading": "requiredComponents",
+  "tabBar": {
+    "color": "#B0A0A0",
+    "selectedColor": "#FF6B81",
+    "backgroundColor": "#FFFFFF",
+    "borderStyle": "white",
+    "list": [
+      {
+        "pagePath": "pages/home/home",
+        "text": "首页"
+      },
+      {
+        "pagePath": "pages/weight/weight",
+        "text": "体重"
+      }
+    ]
+  }
 }

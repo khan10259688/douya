@@ -1,0 +1,216 @@
+<view class="container">
+  <!-- 顶部统计卡片 -->
+  <view class="stats-card">
+    <view class="stats-main">
+      <view class="stats-icon">⚖️</view>
+      <view class="stats-info">
+        <text class="stats-label">最新晨重</text>
+        <view class="stats-value-row">
+          <text class="stats-value">{{latestWeight || '--'}}</text>
+          <text class="stats-unit">kg</text>
+          <text wx:if="{{diffText}}" class="stats-diff {{weightDiff > 0 ? 'diff-up' : (weightDiff < 0 ? 'diff-down' : 'diff-flat')}}">{{diffText}}</text>
+        </view>
+        <text class="stats-sub">{{latestLabel || '暂无晨起记录'}}</text>
+      </view>
+    </view>
+    <view class="stats-grid">
+      <view class="stat-item">
+        <text class="stat-num">{{totalCount}}</text>
+        <text class="stat-name">总记录</text>
+      </view>
+      <view class="stat-item">
+        <text class="stat-num">{{todayCount}}</text>
+        <text class="stat-name">今日记录</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 建档体重卡片 -->
+  <view class="card register-card" bindtap="openRegisterSheet">
+    <view class="register-left">
+      <text class="register-emoji">📋</text>
+    </view>
+    <view class="register-info" wx:if="{{registerWeight > 0}}">
+      <view class="register-row">
+        <text class="register-label">建档体重 {{registerWeight}} kg</text>
+        <text class="register-date" wx:if="{{registerDate}}">{{registerDate}}</text>
+      </view>
+      <view class="register-gain" wx:if="{{totalGain}}">
+        <text class="register-gain-label">较建档</text>
+        <text class="register-gain-value {{gainClass}}">{{totalGain}} kg</text>
+      </view>
+      <view class="register-gain" wx:if="{{!totalGain}}">
+        <text class="register-hint">记录晨重后自动计算总增重</text>
+      </view>
+    </view>
+    <view class="register-info" wx:if="{{registerWeight <= 0}}">
+      <text class="register-label">设置建档体重</text>
+      <text class="register-hint">记录建档时的体重，自动追踪孕期总增重</text>
+    </view>
+    <text class="register-arrow">›</text>
+  </view>
+
+  <!-- 记录入口：大按钮 -->
+  <button class="record-btn" bindtap="openSheet">
+    <text class="record-btn-icon">📝</text>
+    <text class="record-btn-text">记录今日体重</text>
+  </button>
+
+  <!-- 趋势图 -->
+  <view class="card chart-card" wx:if="{{hasRecords}}">
+    <view class="card-title-row">
+      <text class="card-title">📈 晨起体重趋势</text>
+      <view class="download-btn" bindtap="showDownloadModal">⬇ 下载图表</view>
+    </view>
+    <view class="chart-wrap">
+      <canvas type="2d" id="trendCanvas" class="trend-canvas" bindtap="onChartTap"
+              wx:if="{{!showSheet && !showRegisterSheet && !showDownloadModal}}"></canvas>
+    </view>
+    <view class="chart-hint">点击橙色圆点查看体重 · 日期下方灰点 = 当日未记录</view>
+  </view>
+
+  <!-- 日间波动辅助统计 -->
+  <view class="card fluct-card" wx:if="{{daytimeFluct}}">
+    <view class="fluct-icon">🌊</view>
+    <view class="fluct-info">
+      <text class="fluct-title">本周日间平均波动</text>
+      <text class="fluct-desc">日间体重受饮食水分影响，仅供参考，看趋势请以晨重为准</text>
+    </view>
+    <text class="fluct-value">{{daytimeFluct}}</text>
+  </view>
+
+  <!-- 记录列表 -->
+  <view class="card record-card" wx:if="{{hasRecords}}">
+    <view class="card-title-row">
+      <text class="card-title">📋 全部记录</text>
+      <text class="clear-btn" bindtap="clearAll">清空</text>
+    </view>
+
+    <view class="record-list">
+      <view class="record-item" wx:for="{{records}}" wx:key="id">
+        <view class="record-left">
+          <view class="record-date">{{item.date}}</view>
+          <view class="record-period">
+            <text class="period-tag {{item.typeClass}}">{{item.typeLabel}}</text>
+            <text class="record-time">{{item.time}}</text>
+          </view>
+        </view>
+        <view class="record-right">
+          <text class="record-weight">{{item.weight}}<text class="record-unit">kg</text></text>
+          <view class="delete-btn" data-id="{{item.id}}" catchtap="deleteRecord">删除</view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 空状态 -->
+  <view class="empty" wx:if="{{!hasRecords}}">
+    <text class="empty-emoji">⚖️</text>
+    <text class="empty-text">还没有体重记录</text>
+    <text class="empty-sub">每天晨起空腹称一次，轻松追踪孕期体重趋势</text>
+  </view>
+
+  <!-- 底部记录抽屉 -->
+  <view class="sheet-mask" wx:if="{{showSheet}}" bindtap="closeSheet">
+    <view class="sheet" catchtap="noop">
+      <view class="sheet-handle"></view>
+      <text class="sheet-title">记录体重</text>
+
+      <!-- 类型选项 -->
+      <view class="type-option {{recordType === 'morning' ? 'type-active' : ''}}" data-key="morning" bindtap="onSelectType">
+        <view class="type-badge badge-recommend">推荐</view>
+        <text class="type-emoji">🌅</text>
+        <view class="type-text">
+          <text class="type-label">晨起空腹</text>
+          <text class="type-desc">适合看长期趋势</text>
+        </view>
+        <view class="type-radio {{recordType === 'morning' ? 'radio-on' : ''}}"></view>
+      </view>
+
+      <view class="type-option {{recordType === 'daytime' ? 'type-active' : ''}}" data-key="daytime" bindtap="onSelectType">
+        <view class="type-badge badge-supplement">补充</view>
+        <text class="type-emoji">☀️</text>
+        <view class="type-text">
+          <text class="type-label">日间任意时段</text>
+          <text class="type-desc">仅作参考</text>
+        </view>
+        <view class="type-radio {{recordType === 'daytime' ? 'radio-on' : ''}}"></view>
+      </view>
+
+      <!-- 日期选择 -->
+      <picker mode="date" value="{{recordDate}}" start="2020-01-01" end="{{todayISO}}" bindchange="onRecordDateChange">
+        <view class="record-date-row">
+          <image class="record-date-icon" src="../../images/calendar.svg" mode="aspectFit" />
+          <text class="record-date-text">记录日期：{{recordDateCN}}</text>
+          <text class="record-date-arrow">›</text>
+        </view>
+      </picker>
+
+      <!-- 体重输入 -->
+      <view class="input-row">
+        <input class="weight-input" type="digit" placeholder="输入体重" value="{{weightInput}}" bindinput="onWeightInput" focus="{{showSheet}}" />
+        <text class="input-unit">kg</text>
+      </view>
+
+      <button class="sheet-save-btn" bindtap="saveRecord">保存记录</button>
+    </view>
+  </view>
+
+  <!-- 建档体重设置抽屉 -->
+  <view class="sheet-mask" wx:if="{{showRegisterSheet}}" bindtap="closeRegisterSheet">
+    <view class="sheet" catchtap="noop">
+      <view class="sheet-handle"></view>
+      <text class="sheet-title">建档体重</text>
+      <text class="sheet-sub">建档时（约孕 6-12 周）测量的体重，作为孕期增重基准</text>
+
+      <picker mode="date" value="{{regDate}}" start="2020-01-01" end="{{todayISO}}" bindchange="onRegDateChange">
+        <view class="record-date-row">
+          <image class="record-date-icon" src="../../images/calendar.svg" mode="aspectFit" />
+          <text class="record-date-text">建档日期：{{regDateCN}}</text>
+          <text class="record-date-arrow">›</text>
+        </view>
+      </picker>
+
+      <view class="input-row">
+        <input class="weight-input" type="digit" placeholder="输入建档时体重" value="{{regWeightInput}}" bindinput="onRegWeightInput" />
+        <text class="input-unit">kg</text>
+      </view>
+
+      <button class="sheet-save-btn" bindtap="saveRegisterInfo">保存</button>
+    </view>
+  </view>
+
+  <!-- 离屏导出画布（不可见） -->
+  <canvas type="2d" id="exportCanvas" class="export-canvas"></canvas>
+
+  <!-- 下载范围选择弹窗 -->
+  <view class="modal-mask" wx:if="{{showDownloadModal}}" bindtap="hideDownloadModal">
+    <view class="modal" catchtap="noop">
+      <text class="modal-title">下载趋势图</text>
+      <text class="modal-sub">选择时间范围，生成图片保存到相册</text>
+
+      <view class="range-options">
+        <view class="range-option {{rangeType === '7' ? 'range-active' : ''}}" data-v="7" bindtap="onRangeTypeChange">近7天</view>
+        <view class="range-option {{rangeType === '14' ? 'range-active' : ''}}" data-v="14" bindtap="onRangeTypeChange">近14天</view>
+        <view class="range-option {{rangeType === '30' ? 'range-active' : ''}}" data-v="30" bindtap="onRangeTypeChange">近30天</view>
+        <view class="range-option {{rangeType === 'all' ? 'range-active' : ''}}" data-v="all" bindtap="onRangeTypeChange">全部</view>
+        <view class="range-option {{rangeType === 'custom' ? 'range-active' : ''}}" data-v="custom" bindtap="onRangeTypeChange">自定义</view>
+      </view>
+
+      <view class="custom-range" wx:if="{{rangeType === 'custom'}}">
+        <picker mode="date" value="{{customStart}}" start="2020-01-01" end="{{todayISO}}" bindchange="onCustomStartChange">
+          <view class="custom-picker {{customStart ? 'custom-picked' : ''}}">{{customStart || '开始日期'}}</view>
+        </picker>
+        <text class="custom-sep">至</text>
+        <picker mode="date" value="{{customEnd}}" start="2020-01-01" end="{{todayISO}}" bindchange="onCustomEndChange">
+          <view class="custom-picker {{customEnd ? 'custom-picked' : ''}}">{{customEnd || '结束日期'}}</view>
+        </picker>
+      </view>
+
+      <button class="modal-download-btn" bindtap="confirmDownload" disabled="{{downloading}}">
+        {{downloading ? '生成中...' : '⬇ 下载图片'}}
+      </button>
+      <view class="modal-cancel" bindtap="hideDownloadModal">取消</view>
+    </view>
+  </view>
+</view>
