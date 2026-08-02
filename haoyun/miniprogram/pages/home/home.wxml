@@ -1,0 +1,227 @@
+<view class="container">
+  <!-- 欢迎/起始页 -->
+  <view class="welcome" wx:if="{{!hasStarted}}">
+    <view class="welcome-decoration">
+      <view class="welcome-circle"></view>
+      <image class="welcome-icon" src="../../images/header-icon.svg" mode="aspectFit" />
+    </view>
+    <text class="welcome-title">🌸 好孕日记</text>
+    <text class="welcome-subtitle">记录孕期点滴，陪伴幸福时光</text>
+
+    <view class="card start-card">
+      <text class="start-label">嗨，怎么称呼你？</text>
+      <text class="start-hint">给自己取个暖暖的昵称吧</text>
+      <input class="name-input" placeholder="例如：小甜心、准妈妈、乐乐妈..." maxlength="10" value="{{userName}}" bindinput="onNameInput" />
+      <view class="start-divider"></view>
+      <text class="start-label">怀孕第一天</text>
+      <text class="start-hint">即末次月经的第一天</text>
+      <picker mode="date" value="{{firstDay}}" start="2020-01-01" end="{{today}}" bindchange="onDateChange">
+        <view class="date-selector {{firstDay ? 'active' : ''}}">
+          <image class="date-icon" src="../../images/calendar.svg" mode="aspectFit" />
+          <text class="date-text">{{firstDay || '点击选择日期'}}</text>
+        </view>
+      </picker>
+      <button class="btn-start" bindtap="saveDate" disabled="{{!firstDay || !userName}}">
+        <text wx:if="{{!firstDay || !userName}}">请填写信息后开始</text>
+        <text wx:if="{{firstDay && userName}}">✨ 开始记录</text>
+      </button>
+    </view>
+  </view>
+
+  <!-- 主界面 -->
+  <view class="main" wx:if="{{hasStarted}}">
+    <!-- 顶部孕期卡片 -->
+    <view class="hero-card">
+      <view class="hero-bg"></view>
+      <view class="hero-content">
+        <view class="hero-top">
+          <view class="hero-greeting-wrap">
+            <text class="hero-greeting">{{greetingText}}，{{userName}}</text>
+            <text class="hero-blessing">{{blessingText}}</text>
+          </view>
+          <picker mode="date" value="{{firstDay}}" start="2020-01-01" end="{{today}}" bindchange="onFirstDayChange">
+            <view class="hero-edit-btn">修改</view>
+          </picker>
+        </view>
+        <view class="hero-week">
+          <text class="hero-week-num">{{pregnancyInfo.week}}</text>
+          <text class="hero-week-unit">周</text>
+          <text class="hero-day-num">{{pregnancyInfo.day}}</text>
+          <text class="hero-day-unit">天</text>
+        </view>
+        <view class="hero-progress">
+          <view class="hero-progress-bar">
+            <view class="hero-progress-fill" style="width:{{pregnancyInfo.progress}}%"></view>
+          </view>
+          <text class="hero-progress-text">{{pregnancyInfo.progress}}%</text>
+        </view>
+        <view class="hero-baby" wx:if="{{babySize.size}}">
+          <text class="hero-baby-icon">{{babySize.emoji}}</text>
+          <text class="hero-baby-text">宝宝像一颗{{babySize.size}} {{babySize.desc}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 快捷信息 -->
+    <view class="quick-grid">
+      <view class="quick-item">
+        <view class="quick-icon quick-icon-pink">
+          <text class="quick-emoji">📌</text>
+        </view>
+        <text class="quick-label">当前阶段</text>
+        <text class="quick-value">{{pregnancyInfo.period}}</text>
+      </view>
+      <view class="quick-item">
+        <view class="quick-icon quick-icon-purple">
+          <text class="quick-emoji">🎯</text>
+        </view>
+        <text class="quick-label">预产期</text>
+        <text class="quick-value">{{pregnancyInfo.dueDate}}</text>
+      </view>
+      <view class="quick-item">
+        <view class="quick-icon quick-icon-orange">
+          <text class="quick-emoji">⏱️</text>
+        </view>
+        <text class="quick-label">已怀孕</text>
+        <text class="quick-value">{{pregnancyInfo.elapsedDays}} 天</text>
+      </view>
+      <view class="quick-item">
+        <view class="quick-icon quick-icon-green">
+          <text class="quick-emoji">💪</text>
+        </view>
+        <text class="quick-label">剩余天数</text>
+        <text class="quick-value">{{pregnancyInfo.remainingDays}} 天</text>
+      </view>
+    </view>
+
+    <!-- 产检时间表 -->
+    <view class="section">
+      <view class="section-header">
+        <text class="section-title">📋 产检时间表</text>
+        <text class="section-date">{{todayDate}}</text>
+      </view>
+
+      <view class="check-group" wx:if="{{checkItems.length > 0}}">
+        <view class="check-group-header">
+          <text class="check-group-dot urgent-dot"></text>
+          <text class="check-group-title">当前需做</text>
+        </view>
+        <view class="check-card-item {{item.required ? 'required-item' : ''}}" wx:for="{{checkItems}}" wx:key="index" data-name="{{item.name}}" bindtap="toggleCheckItem">
+          <view class="check-left">
+            <view class="check-status {{item.urgent ? 'status-urgent' : ''}}">
+              <text class="status-icon">{{item.urgent ? '❗' : '●'}}</text>
+            </view>
+          </view>
+          <view class="check-center">
+            <view class="check-name-row">
+              <text wx:if="{{!item.required}}" class="optional-badge">可选</text>
+              <text class="check-name-text">{{item.name}}</text>
+            </view>
+            <text class="check-date-text">{{item.dateRange}}</text>
+            <text class="check-desc-text">{{item.desc}}</text>
+          </view>
+          <view class="check-right">
+            <view class="check-done-btn">
+              <text class="done-btn-icon">✓</text>
+            </view>
+          </view>
+        </view>
+      </view>
+
+      <view class="check-group" wx:if="{{overdueChecks.length > 0}}">
+        <view class="check-group-header">
+          <view class="check-group-dot overdue-dot"></view>
+          <text class="check-group-title">已过期未做</text>
+        </view>
+        <view class="check-card-item check-overdue" wx:for="{{overdueChecks}}" wx:key="index" data-name="{{item.name}}" bindtap="toggleCheckItem">
+          <view class="check-left">
+            <view class="check-status status-overdue">
+              <text class="status-icon">⚠️</text>
+            </view>
+          </view>
+          <view class="check-center">
+            <view class="check-name-row">
+              <text class="check-name-text">{{item.name}}</text>
+            </view>
+            <text class="check-date-text">{{item.dateRange}}</text>
+            <text class="check-deadline-text overdue-deadline">{{item.deadline}}</text>
+            <text class="check-desc-text">{{item.desc}}</text>
+          </view>
+          <view class="check-right">
+            <view class="check-done-btn">
+              <text class="done-btn-icon">✓</text>
+            </view>
+          </view>
+        </view>
+      </view>
+
+      <view class="check-group" wx:if="{{upcomingChecks.length > 0}}">
+        <view class="check-group-header">
+          <view class="check-group-dot upcoming-dot"></view>
+          <text class="check-group-title">即将到来</text>
+        </view>
+        <view class="check-card-item check-upcoming {{item.required ? 'required-item' : ''}}" wx:for="{{upcomingChecks}}" wx:key="index">
+          <view class="check-left">
+            <view class="check-status status-upcoming">
+              <text class="status-icon">○</text>
+            </view>
+          </view>
+          <view class="check-center">
+            <view class="check-name-row">
+              <text wx:if="{{!item.required}}" class="optional-badge">可选</text>
+              <text class="check-name-text">{{item.name}}</text>
+            </view>
+            <text class="check-date-text">{{item.dateRange}}</text>
+            <text class="check-deadline-text">{{item.deadline}}</text>
+            <text class="check-desc-text">{{item.desc}}</text>
+          </view>
+        </view>
+      </view>
+
+      <view class="check-group" wx:if="{{completedChecksList.length > 0}}">
+        <view class="check-group-header">
+          <view class="check-group-dot done-dot"></view>
+          <text class="check-group-title">已完成</text>
+        </view>
+        <view class="check-card-item check-done" wx:for="{{completedChecksList}}" wx:key="index" data-name="{{item.name}}" bindtap="toggleCheckItem">
+          <view class="check-left">
+            <view class="check-status status-done">
+              <text class="status-icon">✓</text>
+            </view>
+          </view>
+          <view class="check-center">
+            <view class="check-name-row">
+              <text wx:if="{{!item.required}}" class="optional-badge">可选</text>
+              <text wx:if="{{item.selfPay}}" class="selfpay-badge">自费</text>
+              <text class="check-name-text done-text">{{item.name}}</text>
+            </view>
+            <text class="check-date-text done-text">{{item.dateRange}}</text>
+          </view>
+          <view class="check-right">
+            <view class="check-undo-btn">
+              <text class="undo-text">撤销</text>
+            </view>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 底部操作 -->
+    <view class="bottom-actions">
+      <view class="bottom-action" bindtap="refreshInfo">
+        <text class="bottom-action-icon">🔄</text>
+        <text class="bottom-action-text">刷新</text>
+      </view>
+      <view class="bottom-action-divider"></view>
+      <view class="bottom-action" bindtap="showFeedback">
+        <text class="bottom-action-icon">💬</text>
+        <text class="bottom-action-text">反馈</text>
+      </view>
+      <view class="bottom-action-divider"></view>
+      <view class="bottom-action" bindtap="resetDate">
+        <text class="bottom-action-icon">⚙️</text>
+        <text class="bottom-action-text">重置</text>
+      </view>
+    </view>
+  </view>
+</view>

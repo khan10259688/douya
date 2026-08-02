@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48">
+  <rect x="4" y="8" width="40" height="32" rx="4" fill="none" stroke="#FF6B81" stroke-width="3"/>
+  <line x1="4" y1="18" x2="44" y2="18" stroke="#FF6B81" stroke-width="2"/>
+  <line x1="16" y1="4" x2="16" y2="12" stroke="#FF6B81" stroke-width="2"/>
+  <line x1="32" y1="4" x2="32" y2="12" stroke="#FF6B81" stroke-width="2"/>
+  <text x="24" y="34" text-anchor="middle" font-size="14" fill="#FF6B81" font-weight="bold">日期</text>
+</svg>
