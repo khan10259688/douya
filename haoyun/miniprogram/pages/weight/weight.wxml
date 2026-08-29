@@ -42,6 +42,13 @@
       <view class="register-gain" wx:if="{{!totalGain}}">
         <text class="register-hint">记录晨重后自动计算总增重</text>
       </view>
+      <view class="gain-band" wx:if="{{totalGain}}">
+        <view class="gain-bar">
+          <view class="gain-zone"></view>
+          <view class="gain-marker" style="left:{{gainPct}}%"></view>
+        </view>
+        <text class="gain-legend">建议增重 11.5 ~ 16 kg（按孕前体重正常估算）</text>
+      </view>
     </view>
     <view class="register-info" wx:if="{{registerWeight <= 0}}">
       <text class="register-label">设置建档体重</text>
@@ -112,47 +119,51 @@
 
   <!-- 底部记录抽屉 -->
   <view class="sheet-mask" wx:if="{{showSheet}}" bindtap="closeSheet">
-    <view class="sheet" catchtap="noop">
-      <view class="sheet-handle"></view>
-      <text class="sheet-title">记录体重</text>
+    <view class="sheet sheet-with-kb" style="padding-bottom: {{keyboardHeight}}px" catchtap="noop">
+      <view class="sheet-scroll">
+        <view class="sheet-handle"></view>
+        <text class="sheet-title">记录体重</text>
 
-      <!-- 类型选项 -->
-      <view class="type-option {{recordType === 'morning' ? 'type-active' : ''}}" data-key="morning" bindtap="onSelectType">
-        <view class="type-badge badge-recommend">推荐</view>
-        <text class="type-emoji">🌅</text>
-        <view class="type-text">
-          <text class="type-label">晨起空腹</text>
-          <text class="type-desc">适合看长期趋势</text>
+        <!-- 类型选项 -->
+        <view class="type-option {{recordType === 'morning' ? 'type-active' : ''}}" data-key="morning" bindtap="onSelectType">
+          <view class="type-badge badge-recommend">推荐</view>
+          <text class="type-emoji">🌅</text>
+          <view class="type-text">
+            <text class="type-label">晨起空腹</text>
+            <text class="type-desc">适合看长期趋势</text>
+          </view>
+          <view class="type-radio {{recordType === 'morning' ? 'radio-on' : ''}}"></view>
         </view>
-        <view class="type-radio {{recordType === 'morning' ? 'radio-on' : ''}}"></view>
+
+        <view class="type-option {{recordType === 'daytime' ? 'type-active' : ''}}" data-key="daytime" bindtap="onSelectType">
+          <view class="type-badge badge-supplement">补充</view>
+          <text class="type-emoji">☀️</text>
+          <view class="type-text">
+            <text class="type-label">日间任意时段</text>
+            <text class="type-desc">仅作参考</text>
+          </view>
+          <view class="type-radio {{recordType === 'daytime' ? 'radio-on' : ''}}"></view>
+        </view>
+
+        <!-- 日期选择 -->
+        <picker mode="date" value="{{recordDate}}" start="2020-01-01" end="{{todayISO}}" bindchange="onRecordDateChange">
+          <view class="record-date-row">
+            <image class="record-date-icon" src="../../images/calendar.svg" mode="aspectFit" />
+            <text class="record-date-text">记录日期：{{recordDateCN}}</text>
+            <text class="record-date-arrow">›</text>
+          </view>
+        </picker>
+
+        <!-- 体重输入 -->
+        <view class="input-row">
+          <input class="weight-input" type="digit" placeholder="输入体重" value="{{weightInput}}" bindinput="onWeightInput" focus="{{showSheet}}" adjust-position="{{false}}" />
+          <text class="input-unit">kg</text>
+        </view>
       </view>
 
-      <view class="type-option {{recordType === 'daytime' ? 'type-active' : ''}}" data-key="daytime" bindtap="onSelectType">
-        <view class="type-badge badge-supplement">补充</view>
-        <text class="type-emoji">☀️</text>
-        <view class="type-text">
-          <text class="type-label">日间任意时段</text>
-          <text class="type-desc">仅作参考</text>
-        </view>
-        <view class="type-radio {{recordType === 'daytime' ? 'radio-on' : ''}}"></view>
+      <view class="sheet-footer">
+        <button class="sheet-save-btn" bindtap="saveRecord">保存记录</button>
       </view>
-
-      <!-- 日期选择 -->
-      <picker mode="date" value="{{recordDate}}" start="2020-01-01" end="{{todayISO}}" bindchange="onRecordDateChange">
-        <view class="record-date-row">
-          <image class="record-date-icon" src="../../images/calendar.svg" mode="aspectFit" />
-          <text class="record-date-text">记录日期：{{recordDateCN}}</text>
-          <text class="record-date-arrow">›</text>
-        </view>
-      </picker>
-
-      <!-- 体重输入 -->
-      <view class="input-row">
-        <input class="weight-input" type="digit" placeholder="输入体重" value="{{weightInput}}" bindinput="onWeightInput" focus="{{showSheet}}" />
-        <text class="input-unit">kg</text>
-      </view>
-
-      <button class="sheet-save-btn" bindtap="saveRecord">保存记录</button>
     </view>
   </view>
 

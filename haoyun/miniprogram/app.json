@@ -2,7 +2,12 @@
   "pages": [
     "pages/home/home",
     "pages/weight/weight",
-    "pages/recipe/recipe"
+    "pages/recipe/recipe",
+    "pages/tools/tools",
+    "pages/tools/kick/kick",
+    "pages/tools/contraction/contraction",
+    "pages/tools/bag/bag",
+    "pages/tools/diary/diary"
   ],
   "window": {
     "backgroundColor": "#FFF5F5",
@@ -31,6 +36,10 @@
       {
         "pagePath": "pages/recipe/recipe",
         "text": "食谱"
+      },
+      {
+        "pagePath": "pages/tools/tools",
+        "text": "工具"
       }
     ]
   }

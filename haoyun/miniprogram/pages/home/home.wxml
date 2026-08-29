@@ -229,20 +229,43 @@
 
     <!-- 底部操作 -->
     <view class="bottom-actions">
-      <view class="bottom-action" bindtap="refreshInfo">
-        <text class="bottom-action-icon">🔄</text>
-        <text class="bottom-action-text">刷新</text>
-      </view>
-      <view class="bottom-action-divider"></view>
       <view class="bottom-action" bindtap="showFeedback">
         <text class="bottom-action-icon">💬</text>
         <text class="bottom-action-text">反馈</text>
       </view>
       <view class="bottom-action-divider"></view>
       <view class="bottom-action" bindtap="resetDate">
-        <text class="bottom-action-icon">⚙️</text>
+        <text class="bottom-action-icon">♻️</text>
         <text class="bottom-action-text">重置</text>
       </view>
+    </view>
+  </view>
+
+  <!-- 意见反馈抽屉 -->
+  <view class="fb-mask" wx:if="{{showFeedbackSheet}}" bindtap="closeFeedbackSheet">
+    <view class="fb-sheet" catchtap="noop">
+      <view class="fb-handle"></view>
+      <text class="fb-title">意见反馈</text>
+      <text class="fb-sub">你的建议会让好孕日记变得更好 💕</text>
+
+      <view class="fb-tags">
+        <view class="fb-tag {{selectedTagIndex === index ? 'fb-tag-active' : ''}}"
+              wx:for="{{feedbackTags}}" wx:key="label"
+              data-index="{{index}}" bindtap="onSelectFeedbackTag">{{item.label}}</view>
+      </view>
+
+      <view class="fb-input-wrap">
+        <textarea class="fb-textarea" placeholder="说说你的想法或遇到的问题..."
+                  placeholder-class="fb-placeholder" value="{{feedbackText}}"
+                  bindinput="onFeedbackInput" maxlength="200"
+                  show-confirm-bar="{{false}}" disable-default-padding="{{true}}"></textarea>
+        <text class="fb-count {{feedbackText.length >= 180 ? 'fb-count-warn' : ''}}">{{feedbackText.length}} / 200</text>
+      </view>
+
+      <button class="fb-submit-btn" bindtap="submitFeedback" disabled="{{!feedbackText || feedbackSubmitting}}">
+        {{feedbackSubmitting ? '提交中...' : '提交反馈'}}
+      </button>
+      <view class="fb-cancel" bindtap="closeFeedbackSheet">取消</view>
     </view>
   </view>
 </view>

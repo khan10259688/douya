@@ -6,6 +6,7 @@ cloud.init({
 const db = cloud.database();
 const PREGNANCY_COLLECTION = 'pregnancy_records';
 const WEIGHT_COLLECTION = 'weight_records';
+const TOOL_COLLECTION = 'tool_records';
 
 // ============ 体重记录管理 ============
 
@@ -272,6 +273,143 @@ const saveRegisterWeight = async (event) => {
   }
 };
 
+// ============ 工具类记录管理（胎动/宫缩/日记） ============
+
+// 获取用户某类工具记录（支持分页）
+const getToolRecords = async (event) => {
+  const { OPENID } = cloud.getWXContext();
+  const { kind } = event;
+  if (!kind) {
+    return { success: false, error: '缺少 kind 参数' };
+  }
+  try {
+    const countResult = await db.collection(TOOL_COLLECTION)
+      .where({ _openid: OPENID, kind })
+      .count();
+    const total = countResult.total;
+    const MAX_LIMIT = 100;
+    const batchTimes = Math.ceil(total / MAX_LIMIT);
+    const tasks = [];
+    for (let i = 0; i < batchTimes; i++) {
+      tasks.push(
+        db.collection(TOOL_COLLECTION)
+          .where({ _openid: OPENID, kind })
+          .skip(i * MAX_LIMIT)
+          .limit(MAX_LIMIT)
+          .get()
+      );
+    }
+    const results = await Promise.all(tasks);
+    const data = results.reduce((acc, cur) => acc.concat(cur.data), []);
+    return { success: true, data };
+  } catch (err) {
+    return { success: false, error: err.message };
+  }
+};
+
+// 保存/更新单条工具记录（按 _openid + kind + localId 去重）
+const saveToolRecord = async (event) => {
+  const { OPENID } = cloud.getWXContext();
+  const { kind, record } = event;
+  if (!kind || !record || !record.id) {
+    return { success: false, error: '缺少参数' };
+  }
+  try {
+    const existing = await db.collection(TOOL_COLLECTION)
+      .where({ _openid: OPENID, kind, localId: record.id })
+      .get();
+    if (existing.data.length > 0) {
+      await db.collection(TOOL_COLLECTION)
+        .doc(existing.data[0]._id)
+        .update({ data: { data: record, updatedAt: new Date() } });
+    } else {
+      await db.collection(TOOL_COLLECTION).add({
+        data: {
+          _openid: OPENID,
+          kind,
+          localId: record.id,
+          data: record,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+      });
+    }
+    return { success: true };
+  } catch (err) {
+    return { success: false, error: err.message };
+  }
+};
+
+// 删除单条工具记录
+const deleteToolRecord = async (event) => {
+  const { OPENID } = cloud.getWXContext();
+  const { kind, localId } = event;
+  if (!kind || !localId) {
+    return { success: false, error: '缺少参数' };
+  }
+  try {
+    const existing = await db.collection(TOOL_COLLECTION)
+      .where({ _openid: OPENID, kind, localId })
+      .get();
+    for (const doc of existing.data) {
+      await db.collection(TOOL_COLLECTION).doc(doc._id).remove();
+    }
+    return { success: true };
+  } catch (err) {
+    return { success: false, error: err.message };
+  }
+};
+
+// 清空用户某类工具记录
+const clearToolRecords = async (event) => {
+  const { OPENID } = cloud.getWXContext();
+  const { kind } = event;
+  if (!kind) {
+    return { success: false, error: '缺少 kind 参数' };
+  }
+  try {
+    const existing = await db.collection(TOOL_COLLECTION)
+      .where({ _openid: OPENID, kind })
+      .get();
+    for (const doc of existing.data) {
+      await db.collection(TOOL_COLLECTION).doc(doc._id).remove();
+    }
+    return { success: true };
+  } catch (err) {
+    return { success: false, error: err.message };
+  }
+};
+
+// ============ 待产包勾选管理 ============
+
+// 保存待产包勾选状态（存入孕期档案文档）
+const saveBagChecks = async (event) => {
+  const { OPENID } = cloud.getWXContext();
+  const { bagChecks } = event;
+  try {
+    const existing = await db.collection(PREGNANCY_COLLECTION)
+      .where({ _openid: OPENID })
+      .get();
+    if (existing.data.length > 0) {
+      await db.collection(PREGNANCY_COLLECTION)
+        .doc(existing.data[0]._id)
+        .update({ data: { bagChecks: bagChecks || [], updatedAt: new Date() } });
+    } else {
+      await db.collection(PREGNANCY_COLLECTION).add({
+        data: {
+          _openid: OPENID,
+          bagChecks: bagChecks || [],
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+      });
+    }
+    return { success: true };
+  } catch (err) {
+    return { success: false, error: err.message };
+  }
+};
+
 // 保存反馈意见
 const saveFeedback = async (event) => {
   const { OPENID } = cloud.getWXContext();
@@ -316,6 +454,16 @@ exports.main = async (event, context) => {
       return await deleteWeightRecord(event);
     case 'clearWeightRecords':
       return await clearWeightRecords();
+    case 'getToolRecords':
+      return await getToolRecords(event);
+    case 'saveToolRecord':
+      return await saveToolRecord(event);
+    case 'deleteToolRecord':
+      return await deleteToolRecord(event);
+    case 'clearToolRecords':
+      return await clearToolRecords(event);
+    case 'saveBagChecks':
+      return await saveBagChecks(event);
     default:
       return { success: false, error: '未知的请求类型: ' + event.type };
   }

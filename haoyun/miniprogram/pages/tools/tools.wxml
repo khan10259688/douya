@@ -1,0 +1,40 @@
+<view class="container">
+  <!-- 工具入口 -->
+  <view class="tool-grid">
+    <view class="tool-card" wx:for="{{tools}}" wx:key="title" data-url="{{item.url}}" bindtap="goTool">
+      <view class="tool-icon">
+        <text class="tool-emoji">{{item.emoji}}</text>
+      </view>
+      <view class="tool-info">
+        <text class="tool-title">{{item.title}}</text>
+        <text class="tool-desc">{{item.desc}}</text>
+      </view>
+      <text class="tool-arrow">›</text>
+    </view>
+  </view>
+
+  <!-- 快捷统计 -->
+  <view class="quick-row">
+    <view class="quick-stat">
+      <text class="stat-num">{{kickToday}}</text>
+      <text class="stat-name">今日胎动</text>
+    </view>
+    <view class="quick-divider"></view>
+    <view class="quick-stat">
+      <text class="stat-num">{{bagChecked}}/{{bagTotal}}</text>
+      <text class="stat-name">待产包</text>
+    </view>
+  </view>
+
+  <!-- 产检提醒 -->
+  <view class="card remind-card">
+    <view class="remind-icon">🔔</view>
+    <view class="remind-info">
+      <text class="remind-title">产检提醒</text>
+      <text class="remind-sub">产检临近主动推送到微信</text>
+    </view>
+    <view class="remind-btn" bindtap="onSubscribeReminder">开启</view>
+  </view>
+
+  <view class="footer-tip">更多贴心工具持续更新中 💕</view>
+</view>

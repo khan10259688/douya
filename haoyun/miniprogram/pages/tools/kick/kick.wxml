@@ -1,0 +1,48 @@
+<view class="container">
+  <!-- 数胎动说明 -->
+  <view class="card tip-card">
+    <text class="card-title">👶 数胎动小课堂</text>
+    <view class="tip-lines">
+      <text class="tip-line">· 孕 28 周起，建议每天早中晚各固定 1 小时</text>
+      <text class="tip-line">· 胎动连续动一阵算 1 次，间隔 2 分钟以上分开算</text>
+      <text class="tip-line">· 1 小时不足 3 次或较平时明显减少，及时咨询医生</text>
+      <text class="tip-line">· 也可用"数到 10 次"法：数满 10 次即达标</text>
+    </view>
+  </view>
+
+  <!-- 计数器 -->
+  <view class="counter-card">
+    <text class="counter-state">{{counting ? '计数中…' : '准备就绪'}}</text>
+    <view class="big-num">{{count}}</view>
+    <text class="counter-sub">次 · {{elapsedText}}</text>
+    <view class="kick-btn" bindtap="onTapMain">
+      <text class="kick-btn-text">{{counting ? '动一下点我 👶' : '开始计数'}}</text>
+    </view>
+    <view class="finish-btn" wx:if="{{counting}}" bindtap="finishSession">结束并保存</view>
+    <view class="reached-tip" wx:if="{{counting && count >= 10}}">🎉 已达标，宝宝状态良好</view>
+  </view>
+
+  <!-- 历史记录 -->
+  <view class="card" wx:if="{{records.length > 0}}">
+    <view class="card-row">
+      <text class="card-title">📊 历史记录</text>
+      <text class="card-sub">今日共 {{todayTotal}} 次</text>
+    </view>
+    <view class="rec-item" wx:for="{{records}}" wx:key="id">
+      <view class="rec-main">
+        <view class="rec-head">
+          <text class="rec-count">{{item.count}} 次</text>
+          <text class="rec-badge {{item.statusClass}}">{{item.statusText}}</text>
+        </view>
+        <text class="rec-meta">{{item.date}} {{item.time}} · 用时 {{item.durationText}}</text>
+      </view>
+      <view class="rec-del" data-id="{{item.id}}" bindtap="deleteRecord">删除</view>
+    </view>
+  </view>
+
+  <view class="empty" wx:if="{{records.length === 0}}">
+    <text class="empty-emoji">👶</text>
+    <text class="empty-text">还没有胎动记录</text>
+    <text class="empty-sub">孕 28 周起开始数胎动，监测宝宝安好</text>
+  </view>
+</view>

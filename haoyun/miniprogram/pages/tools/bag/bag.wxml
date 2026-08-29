@@ -1,0 +1,35 @@
+<view class="container">
+  <!-- 进度卡 -->
+  <view class="progress-card">
+    <view class="p-head">
+      <text class="p-emoji">🎒</text>
+      <view class="p-info">
+        <text class="p-title">待产包进度</text>
+        <text class="p-sub">{{progressText}}</text>
+      </view>
+      <text class="p-percent">{{progressPct}}%</text>
+    </view>
+    <view class="p-bar">
+      <view class="p-fill" style="width:{{progressPct}}%"></view>
+    </view>
+    <text class="p-count">已备齐 {{checkedCount}} / {{total}} 项</text>
+  </view>
+
+  <!-- 分类清单 -->
+  <view class="card cat-card" wx:for="{{categories}}" wx:key="key">
+    <view class="cat-head">
+      <text class="cat-emoji">{{item.emoji}}</text>
+      <text class="card-title">{{item.title}}</text>
+      <text class="cat-count">{{item.doneCount}}/{{item.items.length}}</text>
+    </view>
+    <view class="bag-item {{it.checked ? 'bag-checked' : ''}}"
+          wx:for="{{item.items}}" wx:for-item="it" wx:key="id"
+          data-id="{{it.id}}" bindtap="toggleItem">
+      <view class="checkbox {{it.checked ? 'cb-on' : ''}}">{{it.checked ? '✓' : ''}}</view>
+      <text class="bag-name">{{it.name}}</text>
+      <text class="bag-tip" wx:if="{{it.tip}}">{{it.tip}}</text>
+    </view>
+  </view>
+
+  <view class="footer-tip">建议孕 36 周前备齐，临产不慌乱</view>
+</view>

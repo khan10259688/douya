@@ -1,0 +1,202 @@
+.container {
+  padding: 24rpx 24rpx 60rpx;
+  min-height: 100vh;
+  box-sizing: border-box;
+}
+
+.card {
+  background: #FFFFFF;
+  border-radius: 28rpx;
+  padding: 30rpx 28rpx;
+  margin-bottom: 24rpx;
+  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.04);
+}
+
+.card-title {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: #333;
+  display: block;
+  margin-bottom: 20rpx;
+}
+
+/* 今日卡 */
+.today-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 24rpx;
+}
+
+.today-head .card-title {
+  margin-bottom: 0;
+}
+
+.today-date {
+  font-size: 22rpx;
+  color: #B0A0A0;
+}
+
+.mood-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16rpx;
+  margin-bottom: 24rpx;
+}
+
+.mood {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6rpx;
+  background: #F8F4F4;
+  border-radius: 16rpx;
+  padding: 16rpx 20rpx;
+  min-width: 96rpx;
+  transition: all 0.2s;
+}
+
+.mood-on {
+  background: linear-gradient(135deg, #FFF0F3, #FFF7F9);
+  border: 2rpx solid #FF6B81;
+  transform: scale(1.05);
+}
+
+.mood-emoji {
+  font-size: 36rpx;
+}
+
+.mood-label {
+  font-size: 20rpx;
+  color: #999;
+}
+
+.mood-on .mood-label {
+  color: #FF6B81;
+  font-weight: 600;
+}
+
+.input-wrap {
+  background: linear-gradient(135deg, #FFF5F7, #FFFAFB);
+  border: 2rpx solid #FFDCE0;
+  border-radius: 20rpx;
+  padding: 24rpx;
+  margin-bottom: 24rpx;
+}
+
+.diary-input {
+  width: 100%;
+  height: 160rpx;
+  font-size: 28rpx;
+  color: #444;
+  line-height: 1.6;
+}
+
+.ph {
+  color: #D0C0C0;
+}
+
+.save-btn {
+  width: 100%;
+  height: 88rpx;
+  line-height: 88rpx;
+  background: linear-gradient(135deg, #FF6B81, #FF8A9E);
+  color: #FFFFFF;
+  font-size: 30rpx;
+  font-weight: 600;
+  border-radius: 44rpx;
+  box-shadow: 0 6rpx 20rpx rgba(255, 107, 129, 0.3);
+}
+
+.save-btn[disabled] {
+  background: #F0E0E0;
+  color: #CCC;
+  box-shadow: none;
+}
+
+/* 历史条目 */
+.entry {
+  padding: 24rpx 0;
+  border-bottom: 2rpx solid #F8F0F0;
+}
+
+.entry:last-child {
+  border-bottom: none;
+}
+
+.entry-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.entry-mood {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #333;
+}
+
+.entry-date {
+  font-size: 22rpx;
+  color: #B0A0A0;
+}
+
+.entry-content {
+  font-size: 26rpx;
+  color: #555;
+  line-height: 1.7;
+  display: block;
+  margin-top: 12rpx;
+}
+
+.entry-empty {
+  color: #C0B0B0;
+  font-style: italic;
+}
+
+.entry-foot {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 12rpx;
+}
+
+.entry-time {
+  font-size: 20rpx;
+  color: #C0B0B0;
+}
+
+.entry-del {
+  font-size: 22rpx;
+  color: #B0A0A0;
+  background: #F8F4F4;
+  border-radius: 20rpx;
+  padding: 6rpx 18rpx;
+}
+
+/* 空状态 */
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 80rpx 40rpx;
+}
+
+.empty-emoji {
+  font-size: 80rpx;
+  margin-bottom: 20rpx;
+}
+
+.empty-text {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: #999;
+}
+
+.empty-sub {
+  font-size: 24rpx;
+  color: #C0B0B0;
+  text-align: center;
+  margin-top: 12rpx;
+  line-height: 1.6;
+}

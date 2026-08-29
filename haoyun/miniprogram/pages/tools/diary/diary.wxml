@@ -1,0 +1,51 @@
+<view class="container">
+  <!-- 今日心情 -->
+  <view class="card today-card">
+    <view class="today-head">
+      <text class="card-title">📖 今天的心情</text>
+      <text class="today-date">{{todayDate}}</text>
+    </view>
+
+    <view class="mood-row">
+      <view class="mood {{todayMood === index ? 'mood-on' : ''}}"
+            wx:for="{{moods}}" wx:key="label"
+            data-index="{{index}}" bindtap="onSelectMood">
+        <text class="mood-emoji">{{item.emoji}}</text>
+        <text class="mood-label">{{item.label}}</text>
+      </view>
+    </view>
+
+    <view class="input-wrap">
+      <textarea class="diary-input" placeholder="写一句今天想说的话…"
+                placeholder-class="ph" value="{{todayText}}"
+                bindinput="onTextInput" maxlength="200"
+                show-confirm-bar="{{false}}" disable-default-padding="{{true}}"></textarea>
+    </view>
+
+    <button class="save-btn" bindtap="saveToday"
+            disabled="{{todayMood < 0 && !todayText}}">保存今天</button>
+  </view>
+
+  <!-- 历史回顾 -->
+  <view class="card" wx:if="{{entries.length > 0}}">
+    <text class="card-title">🕰️ 往日回顾</text>
+    <view class="entry" wx:for="{{entries}}" wx:key="id">
+      <view class="entry-head">
+        <text class="entry-mood">{{item.moodEmoji}} {{item.moodLabel}}</text>
+        <text class="entry-date">{{item.dateCN}} {{item.weekday}}</text>
+      </view>
+      <text class="entry-content" wx:if="{{item.content}}">{{item.content}}</text>
+      <text class="entry-content entry-empty" wx:else>（这天只记了心情）</text>
+      <view class="entry-foot">
+        <text class="entry-time">{{item.time}}</text>
+        <view class="entry-del" data-id="{{item.id}}" bindtap="deleteEntry">删除</view>
+      </view>
+    </view>
+  </view>
+
+  <view class="empty" wx:if="{{entries.length === 0}}">
+    <text class="empty-emoji">📖</text>
+    <text class="empty-text">还没有日记</text>
+    <text class="empty-sub">记下每天的小心情，给宝宝留一份礼物</text>
+  </view>
+</view>

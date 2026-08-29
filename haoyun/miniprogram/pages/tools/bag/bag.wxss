@@ -1,0 +1,168 @@
+.container {
+  padding: 24rpx 24rpx 60rpx;
+  min-height: 100vh;
+  box-sizing: border-box;
+}
+
+/* 进度卡 */
+.progress-card {
+  background: linear-gradient(135deg, #FF6B81 0%, #FF8A9E 100%);
+  border-radius: 32rpx;
+  padding: 32rpx;
+  margin-bottom: 24rpx;
+  box-shadow: 0 8rpx 28rpx rgba(255, 107, 129, 0.25);
+}
+
+.p-head {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+}
+
+.p-emoji {
+  font-size: 44rpx;
+}
+
+.p-info {
+  flex: 1;
+}
+
+.p-title {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: #FFFFFF;
+  display: block;
+}
+
+.p-sub {
+  font-size: 22rpx;
+  color: rgba(255, 255, 255, 0.85);
+  display: block;
+  margin-top: 4rpx;
+}
+
+.p-percent {
+  font-size: 40rpx;
+  font-weight: 800;
+  color: #FFFFFF;
+}
+
+.p-bar {
+  width: 100%;
+  height: 12rpx;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 6rpx;
+  overflow: hidden;
+  margin-top: 24rpx;
+}
+
+.p-fill {
+  height: 100%;
+  background: #FFFFFF;
+  border-radius: 6rpx;
+  transition: width 0.3s ease;
+}
+
+.p-count {
+  font-size: 24rpx;
+  color: rgba(255, 255, 255, 0.9);
+  display: block;
+  margin-top: 12rpx;
+}
+
+/* 分类卡 */
+.card {
+  background: #FFFFFF;
+  border-radius: 28rpx;
+  padding: 30rpx 28rpx;
+  margin-bottom: 24rpx;
+  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.04);
+}
+
+.cat-head {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  margin-bottom: 20rpx;
+}
+
+.cat-emoji {
+  font-size: 36rpx;
+}
+
+.card-title {
+  flex: 1;
+  font-size: 30rpx;
+  font-weight: 700;
+  color: #333;
+}
+
+.cat-count {
+  font-size: 22rpx;
+  color: #B0A0A0;
+  background: #F8F4F4;
+  border-radius: 16rpx;
+  padding: 4rpx 16rpx;
+}
+
+/* 清单项 */
+.bag-item {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  padding: 22rpx 0;
+  border-bottom: 2rpx solid #F8F0F0;
+}
+
+.bag-item:last-child {
+  border-bottom: none;
+}
+
+.bag-item:active {
+  background: #FFFAFB;
+}
+
+.checkbox {
+  width: 40rpx;
+  height: 40rpx;
+  border: 3rpx solid #E8D5D5;
+  border-radius: 10rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26rpx;
+  color: #FFFFFF;
+  flex-shrink: 0;
+  box-sizing: border-box;
+}
+
+.cb-on {
+  background: #2ED573;
+  border-color: #2ED573;
+}
+
+.bag-name {
+  flex: 1;
+  font-size: 28rpx;
+  color: #444;
+}
+
+.bag-checked .bag-name {
+  color: #B0A0A0;
+  text-decoration: line-through;
+}
+
+.bag-tip {
+  font-size: 18rpx;
+  color: #FF9F43;
+  background: #FFF6E8;
+  border-radius: 8rpx;
+  padding: 2rpx 12rpx;
+}
+
+.footer-tip {
+  text-align: center;
+  font-size: 22rpx;
+  color: #C8B8B8;
+  padding: 24rpx 0;
+}

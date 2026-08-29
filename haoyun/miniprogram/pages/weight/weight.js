@@ -248,6 +248,7 @@ Page({
     customStart: '',
     customEnd: '',
     downloading: false,
+    keyboardHeight: 0,
   },
 
   onLoad() {
@@ -262,6 +263,18 @@ Page({
     });
     this.loadRegisterInfo();
     this.loadRecords();
+
+    // 监听键盘弹起，推高抽屉底部，避免保存按钮被遮挡
+    this._kbListener = (res) => {
+      this.setData({ keyboardHeight: res.height || 0 });
+    };
+    wx.onKeyboardHeightChange && wx.onKeyboardHeightChange(this._kbListener);
+  },
+
+  onUnload() {
+    if (this._kbListener) {
+      wx.offKeyboardHeightChange && wx.offKeyboardHeightChange(this._kbListener);
+    }
   },
 
   onShow() {
@@ -349,10 +362,13 @@ Page({
     // 相对建档体重的总增重（以最新晨重为准）
     let totalGain = '';
     let gainClass = '';
+    let gainPct = 0;
     if (this.data.registerWeight > 0 && latestWeight > 0) {
       const gain = +(latestWeight - this.data.registerWeight).toFixed(1);
       totalGain = gain > 0 ? `+${gain.toFixed(1)}` : gain.toFixed(1);
       gainClass = gain > 0 ? 'gain-up' : (gain < 0 ? 'gain-down' : '');
+      // 按孕期增重建议 11.5~16kg（孕前 BMI 正常）绘制进度
+      gainPct = Math.min(100, Math.max(0, (gain / 16) * 100));
     }
 
     this.setData({
@@ -366,6 +382,7 @@ Page({
       daytimeFluct,
       totalGain,
       gainClass,
+      gainPct,
       hasRecords: records.length > 0,
       chartDays,
       tapIndex: null,

@@ -28,6 +28,16 @@ Page({
     babySize: { size: '', emoji: '', desc: '' },
     weekList: [],
     scrollWeekId: '',
+    showFeedbackSheet: false,
+    feedbackText: '',
+    feedbackTags: [
+      { label: '✨ 功能建议' },
+      { label: '🐛 体验问题' },
+      { label: '📝 内容纠错' },
+      { label: '💬 随便聊聊' },
+    ],
+    selectedTagIndex: -1,
+    feedbackSubmitting: false,
   },
 
   onLoad() {
@@ -560,53 +570,84 @@ Page({
     });
   },
 
-  // 意见反馈
+  // 意见反馈：打开抽屉
   showFeedback() {
-    wx.showModal({
-      title: '💬 意见反馈',
-      content: '感谢你使用好孕日记！如果你有任何建议或遇到的问题，请告诉我，我会努力改进 💕',
-      editable: true,
-      placeholderText: '请输入你的建议或遇到的问题...',
-      success: (res) => {
-        if (res.confirm && res.content.trim()) {
-          const feedback = res.content.trim();
-          // 保存到本地
-          const history = wx.getStorageSync('pregnancy_feedback_history') || [];
-          history.push({
-            content: feedback,
-            time: this.formatDate(new Date()) + ' ' +
-              String(new Date().getHours()).padStart(2, '0') + ':' +
-              String(new Date().getMinutes()).padStart(2, '0'),
-          });
-          wx.setStorageSync('pregnancy_feedback_history', history);
-
-          // 尝试保存到云端
-          wx.cloud.callFunction({
-            name: 'quickstartFunctions',
-            data: { type: 'saveFeedback', feedback },
-          }).then(() => {
-            wx.showToast({ title: '感谢你的反馈！', icon: 'success' });
-          }).catch(() => {
-            wx.showToast({ title: '反馈已保存', icon: 'success' });
-          });
-        } else if (res.confirm && !res.content.trim()) {
-          wx.showToast({ title: '请输入内容', icon: 'none' });
-        }
-      },
+    this.setData({
+      showFeedbackSheet: true,
+      feedbackText: '',
+      selectedTagIndex: -1,
+      feedbackSubmitting: false,
     });
   },
 
-  // 刷新信息
-  refreshInfo() {
-    wx.showLoading({ title: '刷新中...' });
-    this.calculatePregnancyInfo();
+  // 关闭反馈抽屉
+  closeFeedbackSheet() {
+    this.setData({ showFeedbackSheet: false });
+  },
+
+  // 阻止冒泡
+  noop() {},
+
+  // 选择反馈类型标签
+  onSelectFeedbackTag(e) {
+    const idx = e.currentTarget.dataset.index;
     this.setData({
-      lastUpdateTime: this.formatDate(new Date()) + ' ' +
-        String(new Date().getHours()).padStart(2, '0') + ':' +
-        String(new Date().getMinutes()).padStart(2, '0'),
+      selectedTagIndex: this.data.selectedTagIndex === idx ? -1 : idx,
     });
-    wx.hideLoading();
-    wx.showToast({ title: '已刷新', icon: 'success' });
+  },
+
+  // 反馈内容输入
+  onFeedbackInput(e) {
+    this.setData({ feedbackText: e.detail.value });
+  },
+
+  // 提交反馈
+  submitFeedback() {
+    const { feedbackText, feedbackTags, selectedTagIndex, feedbackSubmitting } = this.data;
+    if (feedbackSubmitting) return;
+
+    const text = (feedbackText || '').trim();
+    if (!text) {
+      wx.showToast({ title: '请输入反馈内容', icon: 'none' });
+      return;
+    }
+
+    // 拼接类型标签
+    const tag = selectedTagIndex >= 0 ? feedbackTags[selectedTagIndex].label : '';
+    const feedback = tag ? `${tag}｜${text}` : text;
+
+    // 保存到本地历史
+    try {
+      const history = wx.getStorageSync('pregnancy_feedback_history') || [];
+      history.push({
+        content: feedback,
+        time: this.formatDate(new Date()) + ' ' +
+          String(new Date().getHours()).padStart(2, '0') + ':' +
+          String(new Date().getMinutes()).padStart(2, '0'),
+      });
+      wx.setStorageSync('pregnancy_feedback_history', history);
+    } catch (err) {}
+
+    this.setData({ feedbackSubmitting: true });
+
+    // 保存到云端
+    wx.cloud.callFunction({
+      name: 'quickstartFunctions',
+      data: { type: 'saveFeedback', feedback },
+    }).then(() => {
+      this.setData({ showFeedbackSheet: false, feedbackSubmitting: false });
+      wx.showToast({ title: '感谢你的反馈！', icon: 'success' });
+    }).catch(() => {
+      this.setData({ showFeedbackSheet: false, feedbackSubmitting: false });
+      wx.showToast({ title: '反馈已保存', icon: 'success' });
+    });
+  },
+
+  onShareAppMessage() {
+    return {
+      title: '🌸 好孕日记 · 陪伴你的孕期每一天',
+      path: '/pages/home/home',
+    };
   },
 
   // 重置日期

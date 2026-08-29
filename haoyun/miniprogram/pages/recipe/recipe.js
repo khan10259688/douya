@@ -125,4 +125,11 @@ Page({
       url: '/pages/home/home',
     });
   },
+
+  onShareAppMessage() {
+    return {
+      title: '🌸 好孕日记 · 陪伴你的孕期每一天',
+      path: '/pages/home/home',
+    };
+  },
 });
