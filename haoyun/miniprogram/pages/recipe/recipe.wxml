@@ -1,0 +1,58 @@
+<view class="container">
+  <!-- 未设置怀孕日期 -->
+  <view class="empty" wx:if="{{!isReady}}">
+    <text class="empty-emoji">🍽️</text>
+    <text class="empty-text">设置怀孕日期后可用</text>
+    <text class="empty-sub">根据你的孕月，智能推荐三餐营养搭配和重点营养素</text>
+    <button class="empty-btn" bindtap="goHome">去首页设置</button>
+  </view>
+
+  <block wx:else>
+    <!-- 顶部：孕月 + 重点营养素 -->
+    <view class="hero">
+      <view class="hero-row">
+        <text class="hero-title">🍽️ 今日三餐推荐</text>
+        <view class="hero-tag">
+          <text>{{monthText}}</text>
+          <text class="hero-tag-divider">·</text>
+          <text>{{weekText}}</text>
+        </view>
+      </view>
+      <view class="chips">
+        <text class="chip" wx:for="{{nutrients}}" wx:key="name">{{item.name}}</text>
+      </view>
+      <text class="hero-tip">{{nutrientTip}}</text>
+    </view>
+
+    <!-- 三餐卡片 -->
+    <view class="meal-card accent-{{item.accent}}" wx:for="{{meals}}" wx:key="key">
+      <view class="meal-header">
+        <text class="meal-emoji">{{item.emoji}}</text>
+        <text class="meal-title">{{item.label}}</text>
+        <view class="meal-change" data-key="{{item.key}}" bindtap="onChangeMeal">换一批 🔄</view>
+      </view>
+      <view class="dish-list">
+        <view class="dish" wx:for="{{item.dishes}}" wx:for-item="dish" wx:key="*this">
+          <text class="dish-dot">●</text>
+          <text class="dish-name">{{dish}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 本月重点营养素说明 -->
+    <view class="card nutrient-card">
+      <text class="card-title">💊 本月重点营养素</text>
+      <view class="nutrient-list">
+        <view class="nutrient-item" wx:for="{{nutrients}}" wx:key="name">
+          <text class="nutrient-name">{{item.name}}</text>
+          <text class="nutrient-desc">{{item.desc}}</text>
+        </view>
+      </view>
+    </view>
+
+    <view class="note">
+      <view>* 鱼肉蛋请彻底做熟，豆浆务必彻底煮沸，凉拌菜现做现吃，动物肝脏每周 1-2 次即可</view>
+      <view>* 推荐仅为日常饮食参考，营养要点参考《中国居民膳食指南》，如有妊娠糖尿病等特殊情况请遵医嘱</view>
+    </view>
+  </block>
+</view>

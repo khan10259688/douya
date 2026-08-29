@@ -94,6 +94,27 @@
       </view>
     </view>
 
+    <!-- 孕周日期对照 -->
+    <view class="section">
+      <view class="section-header">
+        <text class="section-title">📅 孕周日期对照</text>
+        <text class="section-date">滑动查看 · 点击显示完整日期</text>
+      </view>
+      <scroll-view class="week-scroll" scroll-x="{{true}}" scroll-into-view="{{scrollWeekId}}"
+                   scroll-with-animation="{{true}}" show-scrollbar="{{false}}">
+        <view class="week-strip">
+          <view wx:for="{{weekList}}" wx:key="week"
+                id="{{item.id}}"
+                class="week-item stage-{{item.stage}} {{item.current ? 'week-current' : ''}}"
+                data-week="{{item.week}}" bindtap="onWeekItemTap">
+            <view class="week-item-tag" wx:if="{{item.current}}">本周</view>
+            <text class="week-item-title">{{item.week}}周</text>
+            <text class="week-item-date">{{item.short}}</text>
+          </view>
+        </view>
+      </scroll-view>
+    </view>
+
     <!-- 产检时间表 -->
     <view class="section">
       <view class="section-header">

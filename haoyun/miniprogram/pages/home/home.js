@@ -26,6 +26,8 @@ Page({
     completedChecks: [], // 已完成的检查项名称列表
     todayDate: '',
     babySize: { size: '', emoji: '', desc: '' },
+    weekList: [],
+    scrollWeekId: '',
   },
 
   onLoad() {
@@ -313,6 +315,7 @@ Page({
     const greetingText = this.getGreeting();
     const blessingText = this.getBlessing(week);
     const babySize = this.getBabySize(week);
+    const weekList = this.buildWeekList(firstDate, week);
 
     this.setData({
       'pregnancyInfo.week': week,
@@ -325,9 +328,50 @@ Page({
       babySize,
       greetingText,
       blessingText,
+      weekList,
+    }, () => {
+      // 定位到当前周（仅孕周变化时滚动，避免每次操作都跳回）
+      if (this._lastScrollWeek !== week) {
+        this._lastScrollWeek = week;
+        setTimeout(() => {
+          this.setData({ scrollWeekId: `wk-${week}` });
+        }, 300);
+      }
     });
 
     this.calculateCheckItems(week, day);
+  },
+
+  // 构建孕周日期对照列表：每周卡片显示该周起止日期
+  buildWeekList(firstDate, currentWeek) {
+    const maxWeek = Math.max(40, Math.min(42, currentWeek));
+    const list = [];
+    for (let w = 0; w <= maxWeek; w++) {
+      const start = new Date(firstDate);
+      start.setDate(start.getDate() + w * 7);
+      const end = new Date(firstDate);
+      end.setDate(end.getDate() + w * 7 + 6);
+      const short = (d) => `${d.getMonth() + 1}/${d.getDate()}`;
+      const full = (d) => `${d.getMonth() + 1}月${d.getDate()}日`;
+      list.push({
+        week: w,
+        id: `wk-${w}`,
+        short: `${short(start)}-${short(end)}`,
+        full: `${full(start)} - ${full(end)}`,
+        current: w === currentWeek,
+        stage: w <= 12 ? 'early' : (w <= 27 ? 'mid' : 'late'),
+      });
+    }
+    return list;
+  },
+
+  // 点击孕周卡片，弹完整日期提示
+  onWeekItemTap(e) {
+    const w = e.currentTarget.dataset.week;
+    const item = this.data.weekList.find((it) => it.week === w);
+    if (item) {
+      wx.showToast({ title: `孕${w}周：${item.full}`, icon: 'none' });
+    }
   },
 
   // 计算检查建议
@@ -596,6 +640,8 @@ Page({
             completedChecksList: [],
             completedChecks: [],
             babySize: { size: '', emoji: '', desc: '' },
+            weekList: [],
+            scrollWeekId: '',
           });
           wx.hideLoading();
           wx.showToast({ title: '已重置', icon: 'success' });

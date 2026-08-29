@@ -347,6 +347,97 @@
   display: block;
 }
 
+/* ========== 孕周日期对照 ========== */
+.week-scroll {
+  width: 100%;
+  white-space: nowrap;
+}
+
+.week-strip {
+  display: inline-flex;
+  gap: 14rpx;
+  padding: 16rpx 4rpx 8rpx;
+}
+
+.week-item {
+  position: relative;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: 140rpx;
+  padding: 18rpx 14rpx;
+  border-radius: 18rpx;
+  background: #FFFFFF;
+  box-shadow: 0 2rpx 8rpx rgba(0,0,0,0.03);
+  flex-shrink: 0;
+  box-sizing: border-box;
+}
+
+.week-item:active {
+  transform: scale(0.96);
+}
+
+.stage-early {
+  border: 2rpx solid #FFDCE0;
+}
+
+.stage-mid {
+  border: 2rpx solid #E3D9FF;
+}
+
+.stage-late {
+  border: 2rpx solid #FFE3C4;
+}
+
+.week-item-title {
+  font-size: 26rpx;
+  font-weight: 700;
+}
+
+.stage-early .week-item-title {
+  color: #FF6B81;
+}
+
+.stage-mid .week-item-title {
+  color: #9B59B6;
+}
+
+.stage-late .week-item-title {
+  color: #FF9F43;
+}
+
+.week-item-date {
+  font-size: 20rpx;
+  color: #B0A0A0;
+  margin-top: 6rpx;
+}
+
+.week-current {
+  background: linear-gradient(135deg, #FF6B81, #FF8A9E);
+  border: 2rpx solid #FF6B81;
+  box-shadow: 0 6rpx 18rpx rgba(255, 107, 129, 0.35);
+  transform: scale(1.06);
+}
+
+.week-current .week-item-title,
+.week-current .week-item-date {
+  color: #FFFFFF;
+}
+
+.week-item-tag {
+  position: absolute;
+  top: -14rpx;
+  right: -6rpx;
+  font-size: 18rpx;
+  color: #FFFFFF;
+  background: #FF6B81;
+  border-radius: 12rpx;
+  padding: 2rpx 12rpx;
+  line-height: 1.5;
+  box-shadow: 0 2rpx 8rpx rgba(255, 107, 129, 0.3);
+}
+
 /* ========== 分区标题 ========== */
 .section {
   margin-bottom: 24rpx;

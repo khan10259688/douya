@@ -1,7 +1,8 @@
 {
   "pages": [
     "pages/home/home",
-    "pages/weight/weight"
+    "pages/weight/weight",
+    "pages/recipe/recipe"
   ],
   "window": {
     "backgroundColor": "#FFF5F5",
@@ -26,6 +27,10 @@
       {
         "pagePath": "pages/weight/weight",
         "text": "体重"
+      },
+      {
+        "pagePath": "pages/recipe/recipe",
+        "text": "食谱"
       }
     ]
   }
