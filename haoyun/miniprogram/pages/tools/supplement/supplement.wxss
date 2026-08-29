@@ -1,0 +1,324 @@
+.container {
+  padding: 24rpx 24rpx 60rpx;
+  min-height: 100vh;
+  box-sizing: border-box;
+}
+
+/* ========== 顶部 ========== */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12rpx 8rpx 20rpx;
+}
+
+.date {
+  font-size: 30rpx;
+  font-weight: 700;
+  color: var(--text-primary, #333);
+}
+
+.streak-badge {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: linear-gradient(135deg, #FFF0F3, #FFF7F9);
+  border-radius: 16rpx;
+  padding: 8rpx 24rpx;
+}
+
+.streak-num {
+  font-size: 36rpx;
+  font-weight: 800;
+  color: #FF6B81;
+  line-height: 1.1;
+}
+
+.streak-label {
+  font-size: 18rpx;
+  color: #C0A0A8;
+}
+
+/* ========== 7天日历条 ========== */
+.week-strip {
+  display: flex;
+  gap: 8rpx;
+  margin-bottom: 28rpx;
+  background: var(--bg-card, #FFFFFF);
+  border-radius: 20rpx;
+  padding: 20rpx 16rpx;
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.04);
+}
+
+.day-cell {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8rpx;
+  padding: 6rpx 0;
+}
+
+.day-today {
+  background: linear-gradient(135deg, #FFF0F3, #FFF7F9);
+  border-radius: 12rpx;
+}
+
+.day-week {
+  font-size: 18rpx;
+  color: #C0A0A8;
+}
+
+.day-date {
+  font-size: 22rpx;
+  font-weight: 600;
+  color: var(--text-primary, #555);
+}
+
+.day-today .day-date {
+  color: #FF6B81;
+}
+
+.day-dots {
+  display: flex;
+  gap: 6rpx;
+  height: 16rpx;
+}
+
+.dot {
+  width: 12rpx;
+  height: 12rpx;
+  border-radius: 50%;
+  background: #F0E8E8;
+}
+
+.dot-folic.on {
+  background: #2ED573;
+}
+
+.dot-prog-none {
+  background: #F0E8E8;
+}
+
+.dot-prog-partial {
+  background: #FFD700;
+}
+
+.dot-prog-done {
+  background: #2ED573;
+}
+
+.day-prog-text {
+  font-size: 16rpx;
+  color: #D0A060;
+  line-height: 1;
+}
+
+/* ========== 打卡卡 ========== */
+.card {
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+  background: var(--bg-card, #FFFFFF);
+  border-radius: 24rpx;
+  padding: 28rpx 24rpx;
+  margin-bottom: 20rpx;
+  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.04);
+}
+
+.card-left {
+  flex-shrink: 0;
+}
+
+.card-icon {
+  width: 72rpx;
+  height: 72rpx;
+  border-radius: 18rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 36rpx;
+}
+
+.folic-card .card-icon {
+  background: linear-gradient(135deg, #FFF3E2, #FFFAF0);
+}
+
+.prog-card .card-icon {
+  background: linear-gradient(135deg, #FFFBE6, #FFFAF0);
+}
+
+.card-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.card-title {
+  font-size: 30rpx;
+  font-weight: 700;
+  color: var(--text-primary, #333);
+  display: block;
+}
+
+.card-sub {
+  font-size: 21rpx;
+  color: var(--text-muted, #B0A0A0);
+  display: block;
+  margin-top: 6rpx;
+  line-height: 1.5;
+}
+
+.prog-head {
+  display: flex;
+  align-items: center;
+  gap: 10rpx;
+}
+
+.prog-tag {
+  font-size: 18rpx;
+  color: #FF9F43;
+  background: #FFF6E8;
+  border-radius: 8rpx;
+  padding: 2rpx 12rpx;
+}
+
+.prog-off {
+  opacity: 0.6;
+}
+
+/* 打卡按钮 */
+.check-btn {
+  width: 96rpx;
+  height: 96rpx;
+  border-radius: 50%;
+  border: 4rpx solid #FFDCE0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.2s;
+}
+
+.check-btn:active {
+  transform: scale(0.92);
+}
+
+.check-btn.checked {
+  background: linear-gradient(135deg, #2ED573, #26C281);
+  border-color: #2ED573;
+  box-shadow: 0 4rpx 16rpx rgba(46, 213, 115, 0.3);
+}
+
+.check-btn.disabled {
+  background: #F5F0F0;
+  border-color: #E8E0E0;
+}
+
+.check-text {
+  font-size: 26rpx;
+  font-weight: 700;
+  color: #FF6B81;
+}
+
+.check-btn.checked .check-text {
+  color: #FFFFFF;
+  font-size: 32rpx;
+}
+
+.check-btn.disabled .check-text {
+  color: #D0C0C0;
+}
+
+/* 孕酮多粒打卡圆点 */
+.prog-dots {
+  display: flex;
+  align-items: center;
+  gap: 10rpx;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  max-width: 280rpx;
+}
+
+.prog-dot {
+  width: 64rpx;
+  height: 64rpx;
+  border-radius: 50%;
+  border: 3rpx solid #FFE0A0;
+  background: #FFFAF0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.15s;
+}
+
+.prog-dot:active {
+  transform: scale(0.9);
+}
+
+.prog-dot.dot-on {
+  background: linear-gradient(135deg, #FFD700, #FFC400);
+  border-color: #FFD700;
+  box-shadow: 0 4rpx 12rpx rgba(255, 196, 0, 0.3);
+}
+
+.prog-dot.dot-on.dot-green {
+  background: linear-gradient(135deg, #2ED573, #26C281);
+  border-color: #2ED573;
+  box-shadow: 0 4rpx 12rpx rgba(46, 213, 115, 0.3);
+}
+
+.prog-dot-text {
+  font-size: 24rpx;
+  font-weight: 700;
+  color: #C0A060;
+}
+
+.prog-dot.dot-on .prog-dot-text {
+  color: #FFFFFF;
+  font-size: 28rpx;
+}
+
+.prog-done-text {
+  font-size: 20rpx;
+  color: #2ED573;
+  width: 100%;
+  text-align: right;
+  margin-top: 4rpx;
+}
+
+/* ========== 管理按钮 ========== */
+.manage-btn {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--bg-card, #FFFFFF);
+  border-radius: 20rpx;
+  padding: 24rpx 28rpx;
+  margin-bottom: 24rpx;
+  font-size: 26rpx;
+  color: #555;
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.04);
+}
+
+.manage-btn:active {
+  background: #FFFAFB;
+}
+
+.arrow {
+  font-size: 36rpx;
+  color: #E8D5D5;
+  font-weight: 700;
+}
+
+/* ========== 说明 ========== */
+.note {
+  padding: 8rpx 16rpx;
+}
+
+.note-line {
+  font-size: 20rpx;
+  color: #C8B8B8;
+  line-height: 1.8;
+  display: block;
+}

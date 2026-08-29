@@ -1,6 +1,17 @@
 const { MEAL_DATA } = require('./recipe-data.js');
 
 const STORAGE_FIRST_DAY = 'pregnancy_first_day';
+const STORAGE_DIET = 'pregnancy_diet_prefs';
+
+// 忌口选项（关键词匹配菜品名）
+const DIET_OPTIONS = [
+  { key: 'seafood', label: '不吃海鲜', keywords: ['虾', '蟹', '贝', '鲈鱼', '鳕鱼', '三文鱼', '带鱼', '龙利鱼', '鲫鱼', '鱼头', '鱼片', '海鲜'] },
+  { key: 'beef', label: '不吃牛肉', keywords: ['牛肉', '牛腩', '牛'] },
+  { key: 'mutton', label: '不吃羊肉', keywords: ['羊肉', '羊'] },
+  { key: 'pork_organ', label: '不吃内脏', keywords: ['猪肝', '鸭血', '肝脏', '内脏'] },
+  { key: 'spicy', label: '不吃辣', keywords: ['辣', '青椒', '红椒', '辣椒'] },
+  { key: 'milk', label: '乳糖不耐', keywords: ['牛奶', '奶酪', '酸奶'] },
+];
 
 // 三餐展示配置
 const MEAL_KEYS = [
@@ -19,15 +30,47 @@ Page({
     nutrientTip: '',
     meals: [],
     changeCount: {},
+    dietOptions: DIET_OPTIONS,
+    dietPrefs: [],
+    showDietSheet: false,
   },
 
   onLoad() {
+    this.loadDietPrefs();
     this.initPage();
   },
 
   onShow() {
-    // 每次进入都重新计算（首页可能刚设置/修改了日期）
     this.initPage();
+  },
+
+  // 读取忌口偏好
+  loadDietPrefs() {
+    try {
+      const prefs = wx.getStorageSync(STORAGE_DIET) || [];
+      this.setData({ dietPrefs: prefs });
+    } catch (err) {}
+  },
+
+  // 获取当前忌口的关键词集合
+  getBlockedKeywords() {
+    const { dietPrefs, dietOptions } = this.data;
+    const set = {};
+    dietPrefs.forEach((key) => {
+      const opt = dietOptions.find((o) => o.key === key);
+      if (opt) opt.keywords.forEach((k) => { set[k] = true; });
+    });
+    return set;
+  },
+
+  // 检查一个 combo 是否含忌口食材
+  comboHasBlocked(combo, blocked) {
+    for (const dish of combo) {
+      for (const kw in blocked) {
+        if (dish.indexOf(kw) !== -1) return true;
+      }
+    }
+    return false;
   },
 
   // 初始化：获取怀孕日期 → 计算孕周孕月 → 生成推荐
@@ -37,7 +80,6 @@ Page({
       firstDay = wx.getStorageSync(STORAGE_FIRST_DAY) || '';
     } catch (err) {}
 
-    // 本地没有时尝试云端档案
     if (!firstDay) {
       try {
         const { result } = await wx.cloud.callFunction({
@@ -78,12 +120,12 @@ Page({
     });
   },
 
-  // 生成三餐推荐：按日期取种子，同一天推荐稳定
+  // 生成三餐推荐：按日期取种子，同一天推荐稳定；过滤含忌口食材的搭配
   buildMeals() {
     const data = MEAL_DATA[this.data.month - 1];
     if (!data) return;
 
-    // 日期种子：一年中的第几天
+    const blocked = this.getBlockedKeywords();
     const now = new Date();
     const daySeed = Math.floor(
       (new Date(now.getFullYear(), now.getMonth(), now.getDate()) - new Date(now.getFullYear(), 0, 0)) / 86400000
@@ -91,14 +133,17 @@ Page({
 
     const changeCount = this.data.changeCount || {};
     const meals = MEAL_KEYS.map((cfg, mi) => {
-      const combos = data.meals[cfg.key];
-      const idx = (daySeed + mi * 3 + (changeCount[cfg.key] || 0)) % combos.length;
+      const allCombos = data.meals[cfg.key];
+      // 过滤掉含忌口食材的搭配
+      const combos = allCombos.filter((c) => !this.comboHasBlocked(c, blocked));
+      const pool = combos.length > 0 ? combos : allCombos;
+      const idx = (daySeed + mi * 3 + (changeCount[cfg.key] || 0)) % pool.length;
       return {
         key: cfg.key,
         label: cfg.label,
         emoji: cfg.emoji,
         accent: cfg.accent,
-        dishes: combos[idx],
+        dishes: pool[idx],
       };
     });
 
@@ -117,6 +162,31 @@ Page({
     this.setData({ changeCount }, () => {
       this.buildMeals();
     });
+  },
+
+  // 忌口设置抽屉
+  openDietSheet() {
+    this.setData({ showDietSheet: true });
+  },
+
+  closeDietSheet() {
+    this.setData({ showDietSheet: false });
+  },
+
+  noop() {},
+
+  // 切换忌口项
+  onToggleDiet(e) {
+    const key = e.currentTarget.dataset.key;
+    let prefs = [...this.data.dietPrefs];
+    const idx = prefs.indexOf(key);
+    if (idx !== -1) prefs.splice(idx, 1);
+    else prefs.push(key);
+    this.setData({ dietPrefs: prefs });
+    try {
+      wx.setStorageSync(STORAGE_DIET, prefs);
+    } catch (err) {}
+    this.buildMeals();
   },
 
   // 跳转首页设置

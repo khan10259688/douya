@@ -13,12 +13,28 @@ const MOODS = [
   { emoji: '🤩', label: '激动' },
 ];
 
+// 身体感受标签
+const SYMPTOMS = [
+  { key: 'back_pain', label: '腰酸' },
+  { key: 'edema', label: '水肿' },
+  { key: 'insomnia', label: '失眠' },
+  { key: 'nausea', label: '孕吐' },
+  { key: 'cramp', label: '抽筋' },
+  { key: 'frequent_urination', label: '尿频' },
+  { key: 'heartburn', label: '烧心' },
+  { key: 'fatigue', label: '乏力' },
+  { key: 'constipation', label: '便秘' },
+  { key: 'kick_active', label: '胎动频繁' },
+];
+
 Page({
   data: {
     moods: MOODS,
+    symptoms: SYMPTOMS,
     todayDate: '',
     todayMood: -1,
     todayText: '',
+    todaySymptoms: [],
     entries: [],
   },
 
@@ -64,6 +80,7 @@ Page({
       todayDate: this.formatDateCN(todayStr),
       todayMood: today ? today.mood : -1,
       todayText: today ? (today.content || '') : '',
+      todaySymptoms: today ? (today.symptoms || []) : [],
     });
   },
 
@@ -71,13 +88,20 @@ Page({
   render(records) {
     const entries = [...records]
       .sort((a, b) => (a.date < b.date ? 1 : -1))
-      .map((r) => ({
-        ...r,
-        dateCN: this.formatDateCN(r.date),
-        weekday: this.weekday(r.date),
-        moodEmoji: MOODS[r.mood] ? MOODS[r.mood].emoji : '',
-        moodLabel: MOODS[r.mood] ? MOODS[r.mood].label : '',
-      }));
+      .map((r) => {
+        const symptomLabels = (r.symptoms || []).map((k) => {
+          const s = SYMPTOMS.find((o) => o.key === k);
+          return s ? s.label : '';
+        }).filter(Boolean);
+        return {
+          ...r,
+          dateCN: this.formatDateCN(r.date),
+          weekday: this.weekday(r.date),
+          moodEmoji: MOODS[r.mood] ? MOODS[r.mood].emoji : '',
+          moodLabel: MOODS[r.mood] ? MOODS[r.mood].label : '',
+          symptomLabels,
+        };
+      });
     this.setData({ entries });
   },
 
@@ -90,11 +114,21 @@ Page({
     this.setData({ todayText: e.detail.value });
   },
 
+  // 切换身体感受标签
+  onToggleSymptom(e) {
+    const key = e.currentTarget.dataset.key;
+    let symptoms = [...this.data.todaySymptoms];
+    const idx = symptoms.indexOf(key);
+    if (idx !== -1) symptoms.splice(idx, 1);
+    else symptoms.push(key);
+    this.setData({ todaySymptoms: symptoms });
+  },
+
   // 保存今日日记（按日期 upsert，云端按 localId 更新）
   saveToday() {
-    const { todayMood, todayText } = this.data;
-    if (todayMood < 0 && !todayText.trim()) {
-      wx.showToast({ title: '请选择心情或写一句话', icon: 'none' });
+    const { todayMood, todayText, todaySymptoms } = this.data;
+    if (todayMood < 0 && !todayText.trim() && todaySymptoms.length === 0) {
+      wx.showToast({ title: '请选择心情或感受', icon: 'none' });
       return;
     }
     const now = new Date();
@@ -104,6 +138,7 @@ Page({
     if (record) {
       record.mood = todayMood;
       record.content = (todayText || '').trim();
+      record.symptoms = todaySymptoms;
       record.time = this.formatTime(now);
     } else {
       record = {
@@ -112,6 +147,7 @@ Page({
         time: this.formatTime(now),
         mood: todayMood,
         content: (todayText || '').trim(),
+        symptoms: todaySymptoms,
       };
       records.push(record);
     }

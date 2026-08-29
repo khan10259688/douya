@@ -1,0 +1,24 @@
+{
+  "light": {
+    "navBg": "#FF6B81",
+    "navText": "#FFFFFF",
+    "pageBg": "#FFF5F7",
+    "cardBg": "#FFFFFF",
+    "textPrimary": "#333333",
+    "textSecondary": "#777777",
+    "textMuted": "#B0A0A0",
+    "border": "#F0E8E8",
+    "accent": "#FF6B81"
+  },
+  "dark": {
+    "navBg": "#2A1F2A",
+    "navText": "#FFB0C0",
+    "pageBg": "#1A1418",
+    "cardBg": "#241C22",
+    "textPrimary": "#F0E8E8",
+    "textSecondary": "#B0A8B0",
+    "textMuted": "#807080",
+    "border": "#3A3038",
+    "accent": "#FF8A9E"
+  }
+}

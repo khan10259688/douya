@@ -1,5 +1,12 @@
 {
   "permissions": {
-    "openapi": []
-  }
+    "openapi": ["subscribeMessage.send"]
+  },
+  "triggers": [
+    {
+      "name": "checkReminderTimer",
+      "type": "timer",
+      "config": "0 0 9 * * * *"
+    }
+  ]
 }

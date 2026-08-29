@@ -19,6 +19,7 @@ Page({
       dueDate: '',
       period: '',
     },
+    stageEmoji: '🌱',
     checkItems: [],
     upcomingChecks: [],
     overdueChecks: [],
@@ -28,7 +29,12 @@ Page({
     babySize: { size: '', emoji: '', desc: '' },
     weekList: [],
     scrollWeekId: '',
+    alertBanner: null,
+    expandedGroups: { overdue: false, upcoming: false, done: false },
     showFeedbackSheet: false,
+    eggVisible: false,
+    eggText: '',
+    eggKick: false,
     feedbackText: '',
     feedbackTags: [
       { label: '✨ 功能建议' },
@@ -113,41 +119,35 @@ Page({
     this.setData({ userName: e.detail.value });
   },
 
-  // 根据时间获取问候语
+  // 根据时间获取问候语（简短风格：早安/午安/晚安/夜安）
   getGreeting() {
     const hour = new Date().getHours();
-    if (hour < 6) return '夜深了';
-    if (hour < 9) return '☀️ 早安';
-    if (hour < 12) return '🌤️ 上午好';
-    if (hour < 14) return '🌞 中午好';
-    if (hour < 18) return '🌇 下午好';
-    if (hour < 21) return '🌆 傍晚好';
-    return '🌙 晚上好';
+    if (hour < 6) return '🌙 夜安';
+    if (hour < 12) return '🌤 早安';
+    if (hour < 18) return '🌞 午安';
+    return '🌙 晚安';
   },
 
-  // 根据孕周生成祝福语
+  // 根据孕周生成简短祝福语
   getBlessing(week) {
     const hour = new Date().getHours();
-    let timeText = '';
-    if (hour < 6) timeText = '夜深了，宝宝和你都在甜甜的梦里吧 🌙';
-    else if (hour < 9) timeText = '新的一天开始了，和宝宝一起迎接阳光吧 🌅';
-    else if (hour < 12) timeText = '上午的时光很美好，记得吃个营养早餐哦 🥛';
-    else if (hour < 14) timeText = '中午了，好好吃顿饭，再小憩一会儿 😴';
-    else if (hour < 18) timeText = '下午也要保持好心情，散散步对身体好 🚶';
-    else if (hour < 21) timeText = '傍晚了，放松一下，听听音乐吧 🎵';
-    else timeText = '一天辛苦了，早点休息，晚安好梦 🌙';
+    let timeTip = '';
+    if (hour < 6) timeTip = '好好休息，宝宝也在梦里呢 🌙';
+    else if (hour < 12) timeTip = '记得吃个营养早餐 🥛';
+    else if (hour < 18) timeTip = '午后散散步，保持好心情 🚶';
+    else timeTip = '放松一下，听听音乐吧 🎵';
 
     const weekBlessings = [
       { max: 4, text: '宝宝正在悄悄扎根' },
       { max: 8, text: '小豆芽在努力长大' },
-      { max: 12, text: '宝宝的小心脏已经开始跳动啦' },
-      { max: 16, text: '孕吐快过去了，胃口回来了吗' },
-      { max: 20, text: '能感受到宝宝在动了吗' },
-      { max: 24, text: '宝宝开始有听觉了，多和ta说说话吧' },
-      { max: 28, text: '进入孕中期啦，这是最舒服的时光' },
-      { max: 32, text: '宝宝越来越活跃，好好享受胎动吧' },
-      { max: 36, text: '离见面越来越近了，保持好心情' },
-      { max: 40, text: '宝宝随时可能报到，做好准备迎接吧' },
+      { max: 12, text: '小心脏开始跳动啦' },
+      { max: 16, text: '孕吐快过去了' },
+      { max: 20, text: '能感受到胎动了吗' },
+      { max: 24, text: '宝宝有听觉了，多和ta说话' },
+      { max: 28, text: '孕中期最舒服的时光' },
+      { max: 32, text: '好好享受胎动吧' },
+      { max: 36, text: '离见面越来越近了' },
+      { max: 40, text: '随时准备迎接宝宝' },
     ];
 
     let weekText = '';
@@ -156,54 +156,54 @@ Page({
     }
     if (!weekText) weekText = '你是最棒的妈妈';
 
-    return `${timeText}。${weekText} 💕`;
+    return `${timeTip} · ${weekText}`;
   },
 
   // 根据孕周返回宝宝大小参照（CRL头臀长/身长数据来源：WHO fetal growth standards）
   getBabySize(week) {
     const sizes = [
-      { max: 4, size: '芝麻粒', emoji: '🫘', desc: '约0.1cm，刚刚着床' },
-      { max: 5, size: '苹果籽', emoji: '🫘', desc: '约0.2cm' },
-      { max: 6, size: '小扁豆', emoji: '🫘', desc: '约0.5cm' },
-      { max: 7, size: '蓝莓', emoji: '🫐', desc: '约1cm' },
-      { max: 8, size: '小芸豆', emoji: '🫘', desc: '约1.6cm' },
-      { max: 9, size: '葡萄', emoji: '🍇', desc: '约2.3cm' },
-      { max: 10, size: '金桔', emoji: '🍊', desc: '约3.1cm' },
-      { max: 11, size: '小柠檬', emoji: '🍋', desc: '约4cm' },
-      { max: 12, size: '李子', emoji: '🫐', desc: '约5.4cm' },
-      { max: 13, size: '豌豆荚', emoji: '🫛', desc: '约7.4cm' },
-      { max: 14, size: '柠檬', emoji: '🍋', desc: '约8.7cm' },
-      { max: 15, size: '苹果', emoji: '🍎', desc: '约10cm' },
-      { max: 16, size: '牛油果', emoji: '🥑', desc: '约12cm' },
-      { max: 17, size: '洋葱', emoji: '🧅', desc: '约13cm' },
-      { max: 18, size: '甜椒', emoji: '🫑', desc: '约14cm' },
-      { max: 19, size: '芒果', emoji: '🥭', desc: '约15cm' },
-      { max: 20, size: '香蕉', emoji: '🍌', desc: '约16cm' },
-      { max: 21, size: '胡萝卜', emoji: '🥕', desc: '约27cm' },
-      { max: 22, size: '木瓜', emoji: '🍈', desc: '约28cm' },
-      { max: 23, size: '大芒果', emoji: '🥭', desc: '约29cm' },
-      { max: 24, size: '玉米', emoji: '🌽', desc: '约30cm' },
-      { max: 25, size: '白萝卜', emoji: '🥬', desc: '约34cm' },
-      { max: 26, size: '大葱', emoji: '🥬', desc: '约36cm' },
-      { max: 27, size: '花椰菜', emoji: '🥦', desc: '约37cm' },
-      { max: 28, size: '大茄子', emoji: '🍆', desc: '约38cm' },
-      { max: 29, size: '冬瓜', emoji: '🥒', desc: '约39cm' },
-      { max: 30, size: '大白菜', emoji: '🥬', desc: '约40cm' },
-      { max: 31, size: '椰子', emoji: '🥥', desc: '约41cm' },
-      { max: 32, size: '菠萝', emoji: '🍍', desc: '约42cm' },
-      { max: 33, size: '菠萝', emoji: '🍍', desc: '约44cm' },
-      { max: 34, size: '哈密瓜', emoji: '🍈', desc: '约45cm' },
-      { max: 35, size: '南瓜', emoji: '🎃', desc: '约46cm' },
-      { max: 36, size: '小西瓜', emoji: '🍉', desc: '约47cm' },
-      { max: 37, size: '大冬瓜', emoji: '🥬', desc: '约48cm' },
-      { max: 38, size: '大西瓜', emoji: '🍉', desc: '约49cm' },
-      { max: 39, size: '大西瓜', emoji: '🍉', desc: '约50cm' },
-      { max: 40, size: '大西瓜', emoji: '🍉', desc: '约51cm，随时准备出来啦' },
+      { max: 4, size: '芝麻粒', emoji: '🫘', desc: '约0.1cm，刚刚着床', develop: '正在分裂成胚胎' },
+      { max: 5, size: '苹果籽', emoji: '🫘', desc: '约0.2cm', develop: '神经管开始形成' },
+      { max: 6, size: '小扁豆', emoji: '🫘', desc: '约0.5cm', develop: '心脏开始跳动' },
+      { max: 7, size: '蓝莓', emoji: '🫐', desc: '约1cm', develop: '四肢芽出现' },
+      { max: 8, size: '小芸豆', emoji: '🫘', desc: '约1.6cm', develop: '手指脚趾雏形形成' },
+      { max: 9, size: '葡萄', emoji: '🍇', desc: '约2.3cm', develop: '主要器官基本成型' },
+      { max: 10, size: '金桔', emoji: '🍊', desc: '约3.1cm', develop: '能吞咽和踢腿' },
+      { max: 11, size: '小柠檬', emoji: '🍋', desc: '约4cm', develop: '指纹开始形成' },
+      { max: 12, size: '李子', emoji: '🫐', desc: '约5.4cm', develop: '有了反射动作' },
+      { max: 13, size: '豌豆荚', emoji: '🫛', desc: '约7.4cm', develop: '能皱眉、吸吮' },
+      { max: 14, size: '柠檬', emoji: '🍋', desc: '约8.7cm', develop: '长出细毛（胎毛）' },
+      { max: 15, size: '苹果', emoji: '🍎', desc: '约10cm', develop: '能感知光线' },
+      { max: 16, size: '牛油果', emoji: '🥑', desc: '约12cm', develop: '会打哈欠了' },
+      { max: 17, size: '洋葱', emoji: '🧅', desc: '约13cm', develop: '脂肪开始积累' },
+      { max: 18, size: '甜椒', emoji: '🫑', desc: '约14cm', develop: '能听到声音' },
+      { max: 19, size: '芒果', emoji: '🥭', desc: '约15cm', develop: '胎动更明显' },
+      { max: 20, size: '香蕉', emoji: '🍌', desc: '约16cm', develop: '能吞咽羊水' },
+      { max: 21, size: '胡萝卜', emoji: '🥕', desc: '约27cm', develop: '眉毛长出来了' },
+      { max: 22, size: '木瓜', emoji: '🍈', desc: '约28cm', develop: '嘴唇更清晰' },
+      { max: 23, size: '大芒果', emoji: '🥭', desc: '约29cm', develop: '能听到妈妈声音' },
+      { max: 24, size: '玉米', emoji: '🌽', desc: '约30cm', develop: '肺部血管发育' },
+      { max: 25, size: '白萝卜', emoji: '🥬', desc: '约34cm', develop: '能抓握' },
+      { max: 26, size: '大葱', emoji: '🥬', desc: '约36cm', develop: '眼睛能睁开' },
+      { max: 27, size: '花椰菜', emoji: '🥦', desc: '约37cm', develop: '大脑快速发育' },
+      { max: 28, size: '大茄子', emoji: '🍆', desc: '约38cm', develop: '能做梦（REM睡眠）' },
+      { max: 29, size: '冬瓜', emoji: '🥒', desc: '约39cm', develop: '肌肉和肺在成熟' },
+      { max: 30, size: '大白菜', emoji: '🥬', desc: '约40cm', develop: '能调节体温' },
+      { max: 31, size: '椰子', emoji: '🥥', desc: '约41cm', develop: '神经系统更完善' },
+      { max: 32, size: '菠萝', emoji: '🍍', desc: '约42cm', develop: '指甲长齐了' },
+      { max: 33, size: '菠萝', emoji: '🍍', desc: '约44cm', develop: '骨骼变硬' },
+      { max: 34, size: '哈密瓜', emoji: '🍈', desc: '约45cm', develop: '中枢神经成熟' },
+      { max: 35, size: '南瓜', emoji: '🎃', desc: '约46cm', develop: '肾脏发育完成' },
+      { max: 36, size: '小西瓜', emoji: '🍉', desc: '约47cm', develop: '肺部基本成熟' },
+      { max: 37, size: '大冬瓜', emoji: '🥬', desc: '约48cm', develop: '算足月了' },
+      { max: 38, size: '大西瓜', emoji: '🍉', desc: '约49cm', develop: '准备好出生' },
+      { max: 39, size: '大西瓜', emoji: '🍉', desc: '约50cm', develop: '随时可能报到' },
+      { max: 40, size: '大西瓜', emoji: '🍉', desc: '约51cm，随时准备出来啦', develop: '准备好和妈妈见面啦' },
     ];
     for (const s of sizes) {
       if (week <= s.max) return s;
     }
-    return { size: '小宝贝', emoji: '👶', desc: '已经准备好和妈妈见面啦' };
+    return { size: '小宝贝', emoji: '👶', desc: '已经准备好和妈妈见面啦', develop: '随时出生' };
   },
 
   // 日期选择变化
@@ -314,12 +314,16 @@ Page({
     const progress = Math.min(100, Math.round((elapsedDays / 280) * 1000) / 10);
 
     let period = '';
+    let stageEmoji = '🌱';
     if (week < 13) {
       period = '孕早期（1-12周）';
+      stageEmoji = '🌱';
     } else if (week < 28) {
       period = '孕中期（13-27周）';
+      stageEmoji = '🌿';
     } else {
       period = '孕晚期（28-40周）';
+      stageEmoji = '🌾';
     }
 
     const greetingText = this.getGreeting();
@@ -336,6 +340,7 @@ Page({
       'pregnancyInfo.dueDate': dueDateStr,
       'pregnancyInfo.period': period,
       babySize,
+      stageEmoji,
       greetingText,
       blessingText,
       weekList,
@@ -535,12 +540,145 @@ Page({
       }
     }
 
+    // 生成产检提醒横幅：过期未做 > 当前需做(紧急) > 即将到来(7天内)
+    let alertBanner = null;
+    if (overdueItems.length > 0) {
+      const item = overdueItems[0];
+      alertBanner = {
+        type: 'overdue',
+        icon: '⚠️',
+        title: `${item.name}已过期`,
+        sub: item.deadline + '，建议尽快补做',
+      };
+    } else if (currentItems.length > 0) {
+      const urgent = currentItems.find((c) => c.urgent) || currentItems[0];
+      alertBanner = {
+        type: 'current',
+        icon: urgent.urgent ? '⏰' : '📋',
+        title: urgent.name,
+        sub: urgent.deadline + '，本周建议完成',
+      };
+    } else if (upcomingItems.length > 0) {
+      const soon = upcomingItems.find((c) => {
+        const m = c.deadline.match(/(\d+)/);
+        return m && parseInt(m[1], 10) <= 7;
+      });
+      if (soon) {
+        alertBanner = {
+          type: 'upcoming',
+          icon: '📅',
+          title: soon.name,
+          sub: soon.deadline + '，可提前预约',
+        };
+      }
+    }
+
     this.setData({
       checkItems: currentItems,
       upcomingChecks: upcomingItems,
       overdueChecks: overdueItems,
       completedChecksList: completedItems,
+      alertBanner,
     });
+  },
+
+  // 点击横幅：请求订阅消息授权，授权后立即发一次提醒，再滚动到产检表
+  scrollToChecks() {
+    // 模板ID集中管理于 config.js
+    const TEMPLATE_ID = require('../../config.js').TEMPLATE_CHECK_REMINDER;
+    if (TEMPLATE_ID) {
+      wx.requestSubscribeMessage({
+        tmplIds: [TEMPLATE_ID],
+        success: (res) => {
+          if (res[TEMPLATE_ID] === 'accept') {
+            // 授权成功，立即调云函数发送一次提醒
+            wx.cloud.callFunction({
+              name: 'quickstartFunctions',
+              data: { type: 'sendMyCheckReminder' },
+            }).then((r) => {
+              if (r && r.result && r.result.success) {
+                wx.showToast({ title: '已发送提醒到微信', icon: 'success' });
+              } else {
+                wx.showToast({ title: '已开启提醒', icon: 'success' });
+              }
+            }).catch(() => {
+              wx.showToast({ title: '已开启提醒', icon: 'success' });
+            });
+          }
+        },
+        fail: () => {},
+        complete: () => {
+          wx.pageScrollTo({ scrollTop: 9999, duration: 300 });
+        },
+      });
+    } else {
+      wx.pageScrollTo({ scrollTop: 9999, duration: 300 });
+    }
+  },
+
+  // 折叠/展开产检分组
+  toggleGroup(e) {
+    const group = e.currentTarget.dataset.group;
+    const key = `expandedGroups.${group}`;
+    this.setData({
+      [key]: !this.data.expandedGroups[group],
+    });
+  },
+
+  // ========== Hero 卡片彩蛋 ==========
+
+  // 点击 hero 卡片空白处触发彩蛋（每天最多 2 次）
+  onHeroTap() {
+    const STORAGE_KEY = 'pregnancy_egg_count';
+    const today = this.formatDate(new Date());
+    let state = {};
+    try { state = wx.getStorageSync(STORAGE_KEY) || {}; } catch (e) { state = {}; }
+    if (state.date !== today) {
+      state = { date: today, count: 0 };
+    }
+    if (state.count >= 3) {
+      // 今日彩蛋已用完，不显示但给个小振动暗示
+      wx.vibrateShort({ type: 'light' });
+      return;
+    }
+    state.count += 1;
+    try { wx.setStorageSync(STORAGE_KEY, state); } catch (e) {}
+
+    // 随机语录 + 随机是否"踢一下"
+    const quotes = [
+      '妈妈我又长大了一点点～',
+      '嘿嘿，我在里面很乖哦',
+      '妈妈的肚皮好温暖呀',
+      '今天妈妈辛苦啦，抱抱～',
+      '我在努力长胖胖，等我出来哦',
+      '听到妈妈的声音啦，开心！',
+      '妈妈吃了好吃的，我也尝到了呢',
+      '今天有没有想我呀？',
+      '我在这边偷偷打哈欠～',
+      '妈妈的每一次心跳我都听得到',
+    ];
+    const tips = [
+      `你知道吗？宝宝这周${this.data.babySize.develop || '在悄悄长大'}`,
+      `宝宝现在像一颗${this.data.babySize.size || '小宝贝'}`,
+      `孕${this.data.pregnancyInfo.week}周啦，离预产期还有${this.data.pregnancyInfo.remainingDays}天`,
+      '孕期保持好心情，宝宝也能感受到哦',
+      '每天和宝宝说说话，ta 能听到的',
+    ];
+    // 一半概率语录，一半概率知识点
+    const useQuote = Math.random() < 0.5;
+    const text = useQuote
+      ? quotes[Math.floor(Math.random() * quotes.length)]
+      : tips[Math.floor(Math.random() * tips.length)];
+    const kick = useQuote && Math.random() < 0.4; // 40% 概率踢一下
+
+    this.setData({ eggVisible: true, eggText: text, eggKick: kick });
+    if (kick) wx.vibrateShort({ type: 'medium' });
+
+    // 2.5 秒后自动消失
+    clearTimeout(this._eggTimer);
+    this._eggTimer = setTimeout(() => {
+      this.setData({ eggVisible: false, eggKick: false });
+    }, 2500);
   },
 
   // 标记检查为已完成/未完成
@@ -644,8 +782,10 @@ Page({
   },
 
   onShareAppMessage() {
+    const w = this.data.pregnancyInfo.week;
+    const baby = this.data.babySize.size || '小宝贝';
     return {
-      title: '🌸 好孕日记 · 陪伴你的孕期每一天',
+      title: `🌸 好孕日记 · 孕${w}周，宝宝像${baby}`,
       path: '/pages/home/home',
     };
   },

@@ -76,6 +76,51 @@
   font-weight: 600;
 }
 
+.section-label {
+  font-size: 24rpx;
+  color: #999;
+  display: block;
+  margin-bottom: 14rpx;
+}
+
+.symptom-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14rpx;
+  margin-bottom: 24rpx;
+}
+
+.symptom {
+  font-size: 23rpx;
+  color: #999;
+  background: #F8F4F4;
+  border: 2rpx solid transparent;
+  border-radius: 24rpx;
+  padding: 10rpx 24rpx;
+}
+
+.symptom-on {
+  color: #FF6B81;
+  background: linear-gradient(135deg, #FFF0F3, #FFF7F9);
+  border-color: #FF6B81;
+  font-weight: 600;
+}
+
+.symptom-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10rpx;
+  margin-top: 10rpx;
+}
+
+.symptom-tag {
+  font-size: 20rpx;
+  color: #FF9F43;
+  background: #FFF6E8;
+  border-radius: 8rpx;
+  padding: 4rpx 14rpx;
+}
+
 .input-wrap {
   background: linear-gradient(135deg, #FFF5F7, #FFFAFB);
   border: 2rpx solid #FFDCE0;

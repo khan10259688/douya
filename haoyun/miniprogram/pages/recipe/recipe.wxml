@@ -12,11 +12,14 @@
     <view class="hero">
       <view class="hero-row">
         <text class="hero-title">🍽️ 今日三餐推荐</text>
-        <view class="hero-tag">
+        <view class="hero-diet-btn" bindtap="openDietSheet">忌口</view>
+      </view>
+      <view class="hero-sub-row">
+        <text class="hero-tag">
           <text>{{monthText}}</text>
           <text class="hero-tag-divider">·</text>
           <text>{{weekText}}</text>
-        </view>
+        </text>
       </view>
       <view class="chips">
         <text class="chip" wx:for="{{nutrients}}" wx:key="name">{{item.name}}</text>
@@ -55,4 +58,21 @@
       <view>* 推荐仅为日常饮食参考，营养要点参考《中国居民膳食指南》，如有妊娠糖尿病等特殊情况请遵医嘱</view>
     </view>
   </block>
+
+  <!-- 忌口设置抽屉 -->
+  <view class="diet-mask" wx:if="{{showDietSheet}}" bindtap="closeDietSheet">
+    <view class="diet-sheet" catchtap="noop">
+      <view class="diet-handle"></view>
+      <text class="diet-title">饮食忌口</text>
+      <text class="diet-sub">勾选后推荐会自动避开这些食材</text>
+      <view class="diet-options">
+        <view class="diet-opt {{dietPrefs.indexOf(item.key) !== -1 ? 'diet-on' : ''}}"
+              wx:for="{{dietOptions}}" wx:key="key"
+              data-key="{{item.key}}" bindtap="onToggleDiet">
+          <text>{{item.label}}</text>
+        </view>
+      </view>
+      <button class="diet-done" bindtap="closeDietSheet">完成</button>
+    </view>
+  </view>
 </view>

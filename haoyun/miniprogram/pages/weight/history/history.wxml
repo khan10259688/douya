@@ -1,0 +1,48 @@
+<view class="container">
+  <!-- 筛选 tabs -->
+  <view class="filter-bar">
+    <view class="filter-tab {{filter === item.key ? 'tab-on' : ''}}"
+          wx:for="{{filters}}" wx:key="key"
+          data-key="{{item.key}}" bindtap="onSelectFilter">
+      {{item.label}}
+    </view>
+  </view>
+
+  <!-- 按月分组的记录 -->
+  <view class="month-group" wx:for="{{displayedGroups}}" wx:for-item="grp" wx:key="month">
+    <view class="month-head">
+      <text class="month-label">{{grp.monthLabel}}</text>
+      <text class="month-count">{{grp.items.length}} 条</text>
+    </view>
+
+    <view class="month-card">
+      <view class="rec-item" wx:for="{{grp.items}}" wx:for-item="r" wx:key="id">
+        <view class="rec-dot {{r.periodKey === 'morning' ? 'dot-morning' : 'dot-daytime'}}"></view>
+        <view class="rec-main">
+          <view class="rec-head">
+            <text class="rec-weight">{{r.weight}}<text class="rec-unit">kg</text></text>
+            <text class="rec-tag {{r.periodKey === 'morning' ? 'tag-morning' : 'tag-daytime'}}">
+              {{r.periodKey === 'morning' ? '晨起' : '日间'}}
+            </text>
+          </view>
+          <text class="rec-meta">{{r.date}} · {{r.time}}</text>
+        </view>
+        <view class="rec-del" data-id="{{r.id}}" catchtap="deleteRecord">删除</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 加载更多 / 到底提示 -->
+  <view class="footer">
+    <text wx:if="{{loading}}">加载中…</text>
+    <text wx:elif="{{hasMore}}" class="load-more" bindtap="loadMore">点击加载更多</text>
+    <text wx:elif="{{totalCount > 0}}" class="end-text">— 已显示全部 {{totalCount}} 条 —</text>
+  </view>
+
+  <!-- 空状态 -->
+  <view class="empty" wx:if="{{totalCount === 0}}">
+    <text class="empty-emoji">⚖️</text>
+    <text class="empty-text">还没有体重记录</text>
+    <text class="empty-sub">去体重页记录第一条吧</text>
+  </view>
+</view>

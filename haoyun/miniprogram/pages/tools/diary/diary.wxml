@@ -15,6 +15,15 @@
       </view>
     </view>
 
+    <text class="section-label">身体感受</text>
+    <view class="symptom-row">
+      <view class="symptom {{todaySymptoms.indexOf(item.key) !== -1 ? 'symptom-on' : ''}}"
+            wx:for="{{symptoms}}" wx:key="key"
+            data-key="{{item.key}}" bindtap="onToggleSymptom">
+        {{item.label}}
+      </view>
+    </view>
+
     <view class="input-wrap">
       <textarea class="diary-input" placeholder="写一句今天想说的话…"
                 placeholder-class="ph" value="{{todayText}}"
@@ -35,7 +44,11 @@
         <text class="entry-date">{{item.dateCN}} {{item.weekday}}</text>
       </view>
       <text class="entry-content" wx:if="{{item.content}}">{{item.content}}</text>
+      <text class="entry-content entry-empty" wx:elif="{{item.symptomLabels.length > 0}}">（这天记了身体感受）</text>
       <text class="entry-content entry-empty" wx:else>（这天只记了心情）</text>
+      <view class="symptom-tags" wx:if="{{item.symptomLabels.length > 0}}">
+        <text class="symptom-tag" wx:for="{{item.symptomLabels}}" wx:for-item="sl" wx:key="*this">{{sl}}</text>
+      </view>
       <view class="entry-foot">
         <text class="entry-time">{{item.time}}</text>
         <view class="entry-del" data-id="{{item.id}}" bindtap="deleteEntry">删除</view>

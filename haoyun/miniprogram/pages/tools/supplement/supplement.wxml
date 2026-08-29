@@ -1,0 +1,76 @@
+<view class="container">
+  <!-- 顶部日期 + 连续打卡 -->
+  <view class="header">
+    <text class="date">{{todayDate}}</text>
+    <view class="streak-badge">
+      <text class="streak-num">{{streak}}</text>
+      <text class="streak-label">连续天数</text>
+    </view>
+  </view>
+
+  <!-- 最近7天日历条 -->
+  <view class="week-strip">
+    <view class="day-cell {{d.isToday ? 'day-today' : ''}}" wx:for="{{recentDays}}" wx:for-item="d" wx:key="date">
+      <text class="day-week">{{d.weekday}}</text>
+      <text class="day-date">{{d.date}}</text>
+      <view class="day-dots">
+        <view class="dot dot-folic {{d.folic ? 'on' : ''}}"></view>
+        <view class="dot dot-prog-{{d.progState}}" wx:if="{{progesteroneOn}}"></view>
+      </view>
+      <text class="day-prog-text" wx:if="{{progesteroneOn && d.progCount}}">{{d.progCount}}/{{progesteronePerDay}}</text>
+    </view>
+  </view>
+
+  <!-- 叶酸打卡卡 -->
+  <view class="card folic-card {{folicPhase}}">
+    <view class="card-left">
+      <view class="card-icon">💊</view>
+    </view>
+    <view class="card-body">
+      <text class="card-title">叶酸</text>
+      <text class="card-sub">{{folicTip}}</text>
+    </view>
+    <view class="check-btn {{folicToday ? 'checked' : ''}}" bindtap="toggleFolic">
+      <text class="check-text">{{folicToday ? '✓' : '打卡'}}</text>
+    </view>
+  </view>
+
+  <!-- 孕酮打卡卡 -->
+  <view class="card prog-card {{progesteroneOn ? '' : 'prog-off'}}">
+    <view class="card-left">
+      <view class="card-icon">🟡</view>
+    </view>
+    <view class="card-body">
+      <view class="prog-head">
+        <text class="card-title">孕酮</text>
+        <text class="prog-tag" wx:if="{{progesteroneOn}}">剩{{progesteroneLeft}}天 · 每日{{progesteronePerDay}}次</text>
+      </view>
+      <text class="card-sub" wx:if="{{progesteroneOn}}">{{progesteroneTip}}</text>
+      <text class="card-sub" wx:else>未开启疗程</text>
+    </view>
+    <view class="prog-dots {{progAllDone ? 'all-done' : ''}}" wx:if="{{progesteroneOn}}">
+      <view class="prog-dot {{d.on ? 'dot-on' : ''}} {{progAllDone ? 'dot-green' : ''}}"
+            wx:for="{{progDots}}" wx:for-item="d" wx:key="idx"
+            data-idx="{{d.idx}}" bindtap="tapProgDot">
+        <text class="prog-dot-text">{{d.on ? '✓' : (d.idx + 1)}}</text>
+      </view>
+      <text class="prog-done-text" wx:if="{{progAllDone}}">✓ 今日已服完</text>
+    </view>
+    <view class="check-btn disabled" wx:else>
+      <text class="check-text">未开</text>
+    </view>
+  </view>
+
+  <!-- 孕酮疗程管理 -->
+  <view class="manage-btn" bindtap="openProgSheet">
+    <text>管理孕酮疗程</text>
+    <text class="arrow">›</text>
+  </view>
+
+  <!-- 说明 -->
+  <view class="note">
+    <view class="note-line">· 叶酸建议孕前3个月至孕12周服用，12周后遵医嘱评估</view>
+    <view class="note-line">· 孕酮须严格按医生处方服用，不可自行增减</view>
+    <view class="note-line">· 本打卡仅为日常提醒工具，不构成医疗建议</view>
+  </view>
+</view>

@@ -26,15 +26,5 @@
     </view>
   </view>
 
-  <!-- 产检提醒 -->
-  <view class="card remind-card">
-    <view class="remind-icon">🔔</view>
-    <view class="remind-info">
-      <text class="remind-title">产检提醒</text>
-      <text class="remind-sub">产检临近主动推送到微信</text>
-    </view>
-    <view class="remind-btn" bindtap="onSubscribeReminder">开启</view>
-  </view>
-
-  <view class="footer-tip">更多贴心工具持续更新中 💕</view>
+  <view class="footer-tip">更多贴心小助手在路上 💕</view>
 </view>

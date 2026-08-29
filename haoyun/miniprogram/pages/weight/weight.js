@@ -363,12 +363,48 @@ Page({
     let totalGain = '';
     let gainClass = '';
     let gainPct = 0;
+    let gainTarget = '';
+    let gainSpeed = '';
+    let gainSpeedClass = '';
     if (this.data.registerWeight > 0 && latestWeight > 0) {
       const gain = +(latestWeight - this.data.registerWeight).toFixed(1);
       totalGain = gain > 0 ? `+${gain.toFixed(1)}` : gain.toFixed(1);
       gainClass = gain > 0 ? 'gain-up' : (gain < 0 ? 'gain-down' : '');
       // 按孕期增重建议 11.5~16kg（孕前 BMI 正常）绘制进度
       gainPct = Math.min(100, Math.max(0, (gain / 16) * 100));
+
+      // 分阶段应增重参考（IOM/中国营养学会）
+      // 读取孕周
+      const firstDate = new Date(wx.getStorageSync('pregnancy_first_day') || this.data.registerDate);
+      let week = 0;
+      if (!isNaN(firstDate.getTime())) {
+        const elapsedDays = Math.max(0, Math.floor((Date.now() - firstDate.getTime()) / 86400000));
+        week = Math.floor(elapsedDays / 7);
+      }
+      // 孕早期(0-12周)约1-2kg，孕中期(13-27周)每周+0.4kg，孕晚期(28-40周)每周+0.5kg
+      let expected;
+      if (week <= 12) {
+        expected = Math.max(0.5, week * 0.15);
+      } else if (week <= 27) {
+        expected = 1.8 + (week - 12) * 0.4;
+      } else {
+        expected = 1.8 + 15 * 0.4 + (week - 27) * 0.5;
+      }
+      expected = +expected.toFixed(1);
+      gainTarget = `本周应增重约 ${expected} kg`;
+
+      // 速度评估：实际 ±1.5kg 以内为正常
+      const diff = gain - expected;
+      if (diff > 1.5) {
+        gainSpeed = `偏快（+${diff.toFixed(1)}kg）`;
+        gainSpeedClass = 'speed-fast';
+      } else if (diff < -1.5) {
+        gainSpeed = `偏慢（${diff.toFixed(1)}kg）`;
+        gainSpeedClass = 'speed-slow';
+      } else {
+        gainSpeed = '正常';
+        gainSpeedClass = 'speed-ok';
+      }
     }
 
     this.setData({
@@ -383,6 +419,9 @@ Page({
       totalGain,
       gainClass,
       gainPct,
+      gainTarget,
+      gainSpeed,
+      gainSpeedClass,
       hasRecords: records.length > 0,
       chartDays,
       tapIndex: null,
@@ -756,6 +795,13 @@ Page({
         this.renderRecords(records);
         wx.showToast({ title: '已删除', icon: 'none' });
       },
+    });
+  },
+
+  // 跳转到全部记录页
+  goHistory() {
+    wx.navigateTo({
+      url: '/pages/weight/history/history',
     });
   },
 

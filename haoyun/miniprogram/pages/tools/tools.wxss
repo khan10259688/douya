@@ -104,65 +104,6 @@
   background: #F0E8E8;
 }
 
-/* ========== 提醒卡片 ========== */
-.card {
-  background: #FFFFFF;
-  border-radius: 28rpx;
-  padding: 30rpx 28rpx;
-  margin-bottom: 24rpx;
-  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.04);
-}
-
-.remind-card {
-  display: flex;
-  align-items: center;
-  gap: 20rpx;
-}
-
-.remind-icon {
-  width: 72rpx;
-  height: 72rpx;
-  border-radius: 18rpx;
-  background: linear-gradient(135deg, #FFF3E2, #FFFAF0);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 36rpx;
-  flex-shrink: 0;
-}
-
-.remind-info {
-  flex: 1;
-}
-
-.remind-title {
-  font-size: 30rpx;
-  font-weight: 700;
-  color: #333;
-  display: block;
-}
-
-.remind-sub {
-  font-size: 22rpx;
-  color: #B0A0A0;
-  display: block;
-  margin-top: 6rpx;
-}
-
-.remind-btn {
-  font-size: 26rpx;
-  color: #FFFFFF;
-  background: linear-gradient(135deg, #FF6B81, #FF8A9E);
-  border-radius: 28rpx;
-  padding: 12rpx 32rpx;
-  flex-shrink: 0;
-  box-shadow: 0 4rpx 12rpx rgba(255, 107, 129, 0.25);
-}
-
-.remind-btn:active {
-  opacity: 0.85;
-}
-
 /* ========== 底部说明 ========== */
 .footer-tip {
   text-align: center;

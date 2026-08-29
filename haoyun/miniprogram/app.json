@@ -7,7 +7,9 @@
     "pages/tools/kick/kick",
     "pages/tools/contraction/contraction",
     "pages/tools/bag/bag",
-    "pages/tools/diary/diary"
+    "pages/tools/diary/diary",
+    "pages/weight/history/history",
+    "pages/tools/supplement/supplement"
   ],
   "window": {
     "backgroundColor": "#FFF5F5",
@@ -19,6 +21,8 @@
   "sitemapLocation": "sitemap.json",
   "style": "v2",
   "lazyCodeLoading": "requiredComponents",
+  "darkmode": true,
+  "themeLocation": "theme.json",
   "tabBar": {
     "color": "#B0A0A0",
     "selectedColor": "#FF6B81",
@@ -39,7 +43,7 @@
       },
       {
         "pagePath": "pages/tools/tools",
-        "text": "工具"
+        "text": "小助手"
       }
     ]
   }

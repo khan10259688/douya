@@ -1,6 +1,8 @@
+const config = require('./config.js');
+
 App({
   globalData: {
-    env: 'cloudbase-d9g1ba0np7d624b4a', // 云环境ID，请替换为实际环境ID
+    env: config.CLOUD_ENV, // 云环境ID（集中管理于 config.js）
   },
   onLaunch() {
     if (!wx.cloud) {
