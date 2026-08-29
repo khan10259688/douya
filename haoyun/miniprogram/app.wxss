@@ -1,30 +1,8 @@
 /**app.wxss**/
-
-/* 深色模式变量（系统跟随自动切换） */
 page {
-  --bg-page: #FFF5F7;
-  --bg-card: #FFFFFF;
-  --text-primary: #333333;
-  --text-secondary: #777777;
-  --text-muted: #B0A0A0;
-  --border-light: #F0E8E8;
-  --accent: #FF6B81;
-  background: linear-gradient(180deg, var(--bg-page) 0%, #FFFAFB 100%);
+  background: linear-gradient(180deg, #FFF5F7 0%, #FFFAFB 100%);
   font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Helvetica Neue', Arial, sans-serif;
   min-height: 100vh;
-}
-
-@media (prefers-color-scheme: dark) {
-  page {
-    --bg-page: #1A1418;
-    --bg-card: #241C22;
-    --text-primary: #F0E8E8;
-    --text-secondary: #B0A8B0;
-    --text-muted: #807080;
-    --border-light: #3A3038;
-    --accent: #FF8A9E;
-    background: linear-gradient(180deg, #1A1418 0%, #201A20 100%);
-  }
 }
 
 button {

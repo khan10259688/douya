@@ -162,7 +162,7 @@
 /* 历史条目 */
 .entry {
   padding: 24rpx 0;
-  border-bottom: 2rpx solid #F8F0F0;
+  border-bottom: 1rpx solid #F6F0F0;
 }
 
 .entry:last-child {

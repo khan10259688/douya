@@ -21,8 +21,6 @@
   "sitemapLocation": "sitemap.json",
   "style": "v2",
   "lazyCodeLoading": "requiredComponents",
-  "darkmode": true,
-  "themeLocation": "theme.json",
   "tabBar": {
     "color": "#B0A0A0",
     "selectedColor": "#FF6B81",

@@ -30,11 +30,14 @@ Page({
     weekList: [],
     scrollWeekId: '',
     alertBanner: null,
+    bannerDismissed: false,
     expandedGroups: { overdue: false, upcoming: false, done: false },
     showFeedbackSheet: false,
     eggVisible: false,
     eggText: '',
     eggKick: false,
+    eggStyle: '',
+    eggBurst: false,
     feedbackText: '',
     feedbackTags: [
       { label: '✨ 功能建议' },
@@ -51,6 +54,7 @@ Page({
     const todayStr = this.formatDate(today);
     const todayDate = `${today.getFullYear()}年${today.getMonth() + 1}月${today.getDate()}日`;
     this.setData({ today: todayStr, todayDate });
+    this.checkBannerDismissed();
     this.loadUserData();
   },
 
@@ -582,6 +586,23 @@ Page({
     });
   },
 
+  // 关闭横幅（当天不再显示）
+  dismissBanner() {
+    this.setData({ bannerDismissed: true });
+    const today = this.formatDate(new Date());
+    try { wx.setStorageSync('pregnancy_banner_dismissed', today); } catch (e) {}
+  },
+
+  // 检查今天是否已关闭横幅
+  checkBannerDismissed() {
+    try {
+      const dismissed = wx.getStorageSync('pregnancy_banner_dismissed') || '';
+      if (dismissed === this.formatDate(new Date())) {
+        this.setData({ bannerDismissed: true });
+      }
+    } catch (e) {}
+  },
+
   // 点击横幅：请求订阅消息授权，授权后立即发一次提醒，再滚动到产检表
   scrollToChecks() {
     // 模板ID集中管理于 config.js
@@ -627,24 +648,15 @@ Page({
 
   // ========== Hero 卡片彩蛋 ==========
 
-  // 点击 hero 卡片空白处触发彩蛋（每天最多 2 次）
+  // 点击 hero 卡片空白处触发彩蛋
   onHeroTap() {
-    const STORAGE_KEY = 'pregnancy_egg_count';
-    const today = this.formatDate(new Date());
-    let state = {};
-    try { state = wx.getStorageSync(STORAGE_KEY) || {}; } catch (e) { state = {}; }
-    if (state.date !== today) {
-      state = { date: today, count: 0 };
+    // 如果上一个动画还在跑，先停掉
+    if (this._eggAnim) {
+      clearInterval(this._eggAnim);
+      this._eggAnim = null;
     }
-    if (state.count >= 3) {
-      // 今日彩蛋已用完，不显示但给个小振动暗示
-      wx.vibrateShort({ type: 'light' });
-      return;
-    }
-    state.count += 1;
-    try { wx.setStorageSync(STORAGE_KEY, state); } catch (e) {}
+    clearTimeout(this._eggTimer);
 
-    // 随机语录 + 随机是否"踢一下"
     const quotes = [
       '妈妈我又长大了一点点～',
       '嘿嘿，我在里面很乖哦',
@@ -664,21 +676,69 @@ Page({
       '孕期保持好心情，宝宝也能感受到哦',
       '每天和宝宝说说话，ta 能听到的',
     ];
-    // 一半概率语录，一半概率知识点
     const useQuote = Math.random() < 0.5;
     const text = useQuote
       ? quotes[Math.floor(Math.random() * quotes.length)]
       : tips[Math.floor(Math.random() * tips.length)];
-    const kick = useQuote && Math.random() < 0.4; // 40% 概率踢一下
+    const kick = useQuote && Math.random() < 0.4;
 
-    this.setData({ eggVisible: true, eggText: text, eggKick: kick });
-    if (kick) wx.vibrateShort({ type: 'medium' });
+    // 重置气泡
+    this.setData({ eggVisible: false, eggText: text, eggKick: kick, eggBurst: false, eggStyle: '' }, () => {
+      this.setData({ eggVisible: true });
+      if (kick) wx.vibrateShort({ type: 'medium' });
+      this.startEggAnim();
+    });
+  },
 
-    // 2.5 秒后自动消失
-    clearTimeout(this._eggTimer);
-    this._eggTimer = setTimeout(() => {
-      this.setData({ eggVisible: false, eggKick: false });
-    }, 2500);
+  // JS 正弦曲线驱动气泡上飘
+  startEggAnim() {
+    const DURATION = 5000; // 总时长 ms
+    const RISE = 420;      // 总上升 rpx（限制在卡片内）
+    const SWING = 30;      // 左右摆幅 rpx（±）
+    const SWING_FREQ = 2.2; // 摆动频率（越低摆越慢）
+    const startTime = Date.now();
+
+    this._eggAnim = setInterval(() => {
+      const elapsed = Date.now() - startTime;
+      const t = elapsed / DURATION; // 0 → 1
+
+      if (t >= 1) {
+        clearInterval(this._eggAnim);
+        this._eggAnim = null;
+        this.setData({ eggVisible: false, eggKick: false, eggBurst: false });
+        return;
+      }
+
+      // 上升：前 70% 上升到顶部，之后悬停
+      const RISE_END = 0.7;
+      const easeT = 1 - Math.pow(1 - Math.min(t / RISE_END, 1), 1.8);
+      const y = -RISE * easeT;
+
+      // 左右摆动：上升到顶部时摆动，悬停时也微摆
+      const x = Math.sin(t * Math.PI * 2 * SWING_FREQ) * SWING;
+
+      // 缩放：前 8% 快速放大到 1，之后缓慢到 1.15，破裂时急速膨胀
+      let scale;
+      if (t < 0.08) {
+        scale = 0.3 + 0.7 * (t / 0.08);
+      } else if (t < 0.82) {
+        scale = 1.0 + 0.15 * ((t - 0.08) / 0.74);
+      } else {
+        // 破裂阶段：急速膨胀
+        scale = 1.15 + 0.5 * ((t - 0.82) / 0.18);
+      }
+
+      // 透明度：前 6% 浮现，悬停保持，82%后破裂渐隐
+      let opacity;
+      if (t < 0.06) opacity = t / 0.06;
+      else if (t < 0.82) opacity = 1;
+      else opacity = 1 - (t - 0.82) / 0.18;
+
+      this.setData({
+        eggStyle: `transform: translate(calc(-50% + ${x}rpx), ${y}rpx) scale(${scale}); opacity: ${opacity};`,
+        eggBurst: t >= 0.82,
+      });
+    }, 16); // ~60fps
   },
 
   // 标记检查为已完成/未完成

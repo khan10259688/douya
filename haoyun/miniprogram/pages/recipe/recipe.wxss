@@ -9,18 +9,18 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 140rpx 40rpx;
+  padding: 100rpx 40rpx;
 }
 
 .empty-emoji {
-  font-size: 96rpx;
-  margin-bottom: 24rpx;
+  font-size: 88rpx;
+  margin-bottom: 20rpx;
 }
 
 .empty-text {
-  font-size: 32rpx;
-  font-weight: 700;
-  color: #555;
+  font-size: 30rpx;
+  font-weight: 600;
+  color: #999;
 }
 
 .empty-sub {
@@ -51,6 +51,15 @@
   padding: 32rpx;
   box-shadow: 0 8rpx 32rpx rgba(255, 107, 129, 0.2);
   margin-bottom: 24rpx;
+}
+
+.diet-sheet {
+  width: 100%;
+  background: #FFFFFF;
+  border-radius: 36rpx 36rpx 0 0;
+  padding: 20rpx 36rpx 54rpx;
+  box-sizing: border-box;
+  box-shadow: 0 -8rpx 40rpx rgba(0, 0, 0, 0.12);
 }
 
 .hero-row {
@@ -346,7 +355,7 @@
 
 /* ========== 底部说明 ========== */
 .note {
-  font-size: 20rpx;
+  font-size: 22rpx;
   color: #C8B8B8;
   text-align: center;
   line-height: 1.6;

@@ -1,6 +1,6 @@
 /* ========== 页面容器 ========== */
 .container {
-  padding: 0 24rpx 60rpx;
+  padding: 24rpx 24rpx 60rpx;
   min-height: 100vh;
   box-sizing: border-box;
 }
@@ -225,13 +225,27 @@
   flex-shrink: 0;
 }
 
+.alert-close {
+  font-size: 24rpx;
+  color: #C0B0B0;
+  background: rgba(255, 255, 255, 0.4);
+  border-radius: 50%;
+  width: 40rpx;
+  height: 40rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-left: 8rpx;
+}
+
 /* ========== 顶部孕期卡片 ========== */
 .hero-card {
   position: relative;
   border-radius: 32rpx;
   overflow: hidden;
   margin-bottom: 24rpx;
-  box-shadow: 0 8rpx 32rpx rgba(255, 107, 129, 0.15);
+  box-shadow: 0 8rpx 32rpx rgba(255, 107, 129, 0.2);
 }
 
 /* 宝宝踢一下动画 */
@@ -247,51 +261,49 @@
   80% { transform: translateY(2rpx); }
 }
 
-/* 彩蛋气泡：从中央上飘，像水泡飞出屏幕 */
+/* 彩蛋气泡：椭圆形半透明，带高光（JS 驱动正弦摆动） */
 .egg-bubble {
   position: absolute;
-  bottom: 60rpx;
+  bottom: 40rpx;
   left: 50%;
-  transform: translateX(-50%) scale(0.5);
   opacity: 0;
-  background: rgba(255, 255, 255, 0.92);
-  border-radius: 32rpx;
-  padding: 20rpx 32rpx;
-  box-shadow: 0 4rpx 24rpx rgba(0, 0, 0, 0.1);
+  background: rgba(255, 255, 255, 0.45);
+  border: 2rpx solid rgba(255, 255, 255, 0.7);
+  border-radius: 60rpx;
+  padding: 22rpx 40rpx;
+  backdrop-filter: blur(8px);
   pointer-events: none;
-  max-width: 80%;
-  z-index: 10;
+  max-width: 76%;
+  z-index: 20;
+  overflow: hidden;
+  will-change: transform, opacity;
 }
 
-.egg-show {
-  animation: eggFloat 2.5s ease-out forwards;
+/* 破裂态：边框变粗变透明 + 模糊散开 */
+.egg-bursting {
+  border-width: 6rpx !important;
+  border-color: rgba(255, 255, 255, 0.3) !important;
+  filter: blur(3px);
 }
 
-@keyframes eggFloat {
-  0% {
-    opacity: 0;
-    transform: translateX(-50%) translateY(0) scale(0.5);
-  }
-  15% {
-    opacity: 1;
-    transform: translateX(-50%) translateY(-40rpx) scale(1);
-  }
-  70% {
-    opacity: 1;
-    transform: translateX(-50%) translateY(-300rpx) scale(1.05);
-  }
-  100% {
-    opacity: 0;
-    transform: translateX(-50%) translateY(-600rpx) scale(1.15);
-  }
+.egg-highlight {
+  position: absolute;
+  top: 8rpx;
+  left: 20rpx;
+  width: 16rpx;
+  height: 10rpx;
+  background: rgba(255, 255, 255, 0.85);
+  border-radius: 50%;
+  filter: blur(2px);
 }
 
 .egg-text {
-  font-size: 28rpx;
-  font-weight: 600;
-  color: #FF6B81;
+  font-size: 25rpx;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.95);
   text-align: center;
   line-height: 1.5;
+  text-shadow: 0 2rpx 8rpx rgba(255, 107, 129, 0.3);
 }
 
 .hero-bg {
@@ -450,7 +462,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  box-shadow: 0 4rpx 16rpx rgba(0,0,0,0.04);
+  box-shadow: 0 4rpx 20rpx rgba(0,0,0,0.04);
 }
 
 .quick-icon {
@@ -508,7 +520,7 @@
   padding: 18rpx 14rpx;
   border-radius: 18rpx;
   background: #FFFFFF;
-  box-shadow: 0 2rpx 8rpx rgba(0,0,0,0.03);
+  box-shadow: 0 4rpx 20rpx rgba(0,0,0,0.04);
   flex-shrink: 0;
   box-sizing: border-box;
 }
@@ -667,7 +679,7 @@
   border-radius: 20rpx;
   padding: 24rpx 20rpx;
   margin-bottom: 12rpx;
-  box-shadow: 0 2rpx 12rpx rgba(0,0,0,0.03);
+  box-shadow: 0 4rpx 20rpx rgba(0,0,0,0.04);
   align-items: flex-start;
 }
 
@@ -890,7 +902,7 @@
 }
 
 .bottom-action-text {
-  font-size: 24rpx;
+  font-size: 22rpx;
   color: #999;
 }
 

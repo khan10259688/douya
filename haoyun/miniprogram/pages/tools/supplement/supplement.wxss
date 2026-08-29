@@ -15,7 +15,7 @@
 .date {
   font-size: 30rpx;
   font-weight: 700;
-  color: var(--text-primary, #333);
+  color: #333;
 }
 
 .streak-badge {
@@ -44,10 +44,10 @@
   display: flex;
   gap: 8rpx;
   margin-bottom: 28rpx;
-  background: var(--bg-card, #FFFFFF);
+  background: #FFFFFF;
   border-radius: 20rpx;
   padding: 20rpx 16rpx;
-  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.04);
+  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.04);
 }
 
 .day-cell {
@@ -72,7 +72,7 @@
 .day-date {
   font-size: 22rpx;
   font-weight: 600;
-  color: var(--text-primary, #555);
+  color: #555;
 }
 
 .day-today .day-date {
@@ -119,8 +119,8 @@
   display: flex;
   align-items: center;
   gap: 20rpx;
-  background: var(--bg-card, #FFFFFF);
-  border-radius: 24rpx;
+  background: #FFFFFF;
+  border-radius: 28rpx;
   padding: 28rpx 24rpx;
   margin-bottom: 20rpx;
   box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.04);
@@ -154,15 +154,15 @@
 }
 
 .card-title {
-  font-size: 30rpx;
+  font-size: 32rpx;
   font-weight: 700;
-  color: var(--text-primary, #333);
+  color: #333;
   display: block;
 }
 
 .card-sub {
   font-size: 21rpx;
-  color: var(--text-muted, #B0A0A0);
+  color: #B0A0A0;
   display: block;
   margin-top: 6rpx;
   line-height: 1.5;
@@ -292,13 +292,13 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: var(--bg-card, #FFFFFF);
+  background: #FFFFFF;
   border-radius: 20rpx;
   padding: 24rpx 28rpx;
   margin-bottom: 24rpx;
   font-size: 26rpx;
   color: #555;
-  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.04);
+  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.04);
 }
 
 .manage-btn:active {
@@ -317,7 +317,7 @@
 }
 
 .note-line {
-  font-size: 20rpx;
+  font-size: 22rpx;
   color: #C8B8B8;
   line-height: 1.8;
   display: block;

@@ -31,13 +31,14 @@
   <!-- 主界面 -->
   <view class="main" wx:if="{{hasStarted}}">
     <!-- 产检提醒横幅 -->
-    <view class="alert-banner {{alertBanner.type}}" wx:if="{{alertBanner}}" bindtap="scrollToChecks">
+    <view class="alert-banner {{alertBanner.type}}" wx:if="{{alertBanner && !bannerDismissed}}" bindtap="scrollToChecks">
       <text class="alert-icon">{{alertBanner.icon}}</text>
       <view class="alert-text">
         <text class="alert-title">{{alertBanner.title}}</text>
         <text class="alert-sub">{{alertBanner.sub}}</text>
       </view>
       <text class="alert-arrow">›</text>
+      <view class="alert-close" catchtap="dismissBanner">✕</view>
     </view>
 
     <!-- 顶部孕期卡片 -->
@@ -73,8 +74,9 @@
           </view>
         </view>
       </view>
-      <!-- 彩蛋气泡 -->
-      <view class="egg-bubble {{eggVisible ? 'egg-show' : ''}}" catchtap="onHeroTap">
+      <!-- 彩蛋气泡（JS 正弦驱动） -->
+      <view class="egg-bubble {{eggBurst ? 'egg-bursting' : ''}}" style="{{eggStyle}}" wx:if="{{eggVisible}}" catchtap="onHeroTap">
+        <view class="egg-highlight"></view>
         <text class="egg-text">{{eggText}}</text>
       </view>
     </view>

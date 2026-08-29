@@ -1,5 +1,5 @@
 .container {
-  padding: 20rpx 24rpx 60rpx;
+  padding: 24rpx 24rpx 60rpx;
   min-height: 100vh;
   box-sizing: border-box;
 }
@@ -68,7 +68,7 @@
   align-items: center;
   gap: 18rpx;
   padding: 22rpx 4rpx;
-  border-bottom: 1rpx solid #F6F0F0;
+  border-bottom: 2rpx solid #F8F0F0;
 }
 
 .rec-item:last-child {
@@ -128,7 +128,7 @@
   font-size: 21rpx;
   color: #C0B0B0;
   background: #F8F4F4;
-  border-radius: 18rpx;
+  border-radius: 20rpx;
   padding: 8rpx 16rpx;
   flex-shrink: 0;
 }
@@ -155,6 +155,17 @@
   flex-direction: column;
   align-items: center;
   padding: 100rpx 40rpx;
+}
+
+.empty-emoji {
+  font-size: 88rpx;
+  margin-bottom: 20rpx;
+}
+
+.empty-text {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: #999;
 }
 
 .empty-emoji {
