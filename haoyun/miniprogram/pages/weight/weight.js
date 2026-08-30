@@ -321,11 +321,11 @@ Page({
 
   // 渲染记录到页面
   renderRecords(records) {
-    // 按时间排序（新→旧）
+    // 按日期降序，同一天晨起排前（morning < daytime 字母序，但语义上晨起更重要）
+    const periodOrder = (k) => (normalizeType(k) === 'morning' ? 0 : 1);
     const sorted = [...records].sort((a, b) => {
-      const ta = `${a.date} ${a.periodKey}`;
-      const tb = `${b.date} ${b.periodKey}`;
-      return ta < tb ? 1 : -1;
+      if (a.date !== b.date) return a.date < b.date ? 1 : -1;
+      return periodOrder(a.periodKey) - periodOrder(b.periodKey);
     }).map((r) => {
       const type = normalizeType(r.periodKey);
       return {

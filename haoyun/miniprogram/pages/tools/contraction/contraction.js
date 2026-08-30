@@ -106,15 +106,23 @@ Page({
     const durationSec = Math.floor((Date.now() - this._startTime) / 1000);
     const now = new Date();
 
-    // 计算与上一次宫缩的间隔（start-to-start）
+    // 计算与上一次宫缩的间隔（start-to-start）：取本次之前最近的一条，不限同一天，避免跨日漏算
     const today = this.formatDate(now);
-    const todays = toolRecords.readLocal(KIND).filter((r) => r.date === today);
+    const allRecords = toolRecords.readLocal(KIND);
+    const beforeThis = allRecords
+      .filter((r) => {
+        // 比本次开始时间早的（按日期+时间字符串比较）
+        const thisKey = today + ' ' + this.formatClock(now);
+        return (r.date + ' ' + r.start) < thisKey;
+      })
+      .sort((a, b) => ((a.date + ' ' + a.start) < (b.date + ' ' + b.start) ? 1 : -1));
     let intervalSec = null;
-    if (todays.length > 0) {
-      const last = todays.sort((a, b) => (a.start < b.start ? -1 : 1)).pop();
-      // 上次 start 距这次 start 的秒数
-      const [h, mi, s] = last.start.split(':').map(Number);
-      const lastTs = new Date(now.getFullYear(), now.getMonth(), now.getDate(), h, mi, s).getTime();
+    if (beforeThis.length > 0) {
+      const last = beforeThis[0];
+      // 上次 start 距这次 start 的秒数：按各自日期+时间构造本地时间戳
+      const lp = last.date.split('-').map(Number);
+      const [lh, lmi, ls] = last.start.split(':').map(Number);
+      const lastTs = new Date(lp[0], lp[1] - 1, lp[2], lh, lmi, ls).getTime();
       intervalSec = Math.max(0, Math.floor((this._startTime - lastTs) / 1000));
     }
 

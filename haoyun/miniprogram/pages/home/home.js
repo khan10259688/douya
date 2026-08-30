@@ -285,7 +285,9 @@ Page({
   // 修改怀孕第一天日期
   onFirstDayChange(e) {
     const newDate = e.detail.value;
-    const firstDate = new Date(newDate);
+    // 修正时区：按本地日期解析，避免 UTC 偏移导致 diffDays 少算
+    const parts = newDate.split('-').map(Number);
+    const firstDate = new Date(parts[0], parts[1] - 1, parts[2]);
     const today = new Date();
     const diffDays = Math.floor((today - firstDate) / (1000 * 60 * 60 * 24));
 
@@ -346,7 +348,9 @@ Page({
       return;
     }
 
-    const firstDate = new Date(this.data.firstDay);
+    // 修正时区：按本地日期解析，避免 UTC 偏移导致 diffDays 少算
+    const parts = this.data.firstDay.split('-').map(Number);
+    const firstDate = new Date(parts[0], parts[1] - 1, parts[2]);
     const today = new Date();
     const diffDays = Math.floor((today - firstDate) / (1000 * 60 * 60 * 24));
 
@@ -368,7 +372,9 @@ Page({
   calculatePregnancyInfo() {
     if (!this.data.firstDay) return;
 
-    const firstDate = new Date(this.data.firstDay);
+    // 修正时区：把日期字符串当作本地日期 00:00 解析，避免 UTC 偏移导致孕周少算
+    const parts = this.data.firstDay.split('-').map(Number);
+    const firstDate = new Date(parts[0], parts[1] - 1, parts[2]);
     const today = new Date();
 
     const elapsedDays = Math.floor((today - firstDate) / (1000 * 60 * 60 * 24));

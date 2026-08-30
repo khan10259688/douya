@@ -49,7 +49,9 @@ Page({
     let firstDay = '';
     try { firstDay = wx.getStorageSync(STORAGE_FIRST_DAY) || ''; } catch (e) {}
     if (!firstDay) return;
-    const firstDate = new Date(firstDay);
+    // 修正时区：按本地日期解析
+    const parts = firstDay.split('-').map(Number);
+    const firstDate = new Date(parts[0], parts[1] - 1, parts[2]);
     if (isNaN(firstDate.getTime())) return;
     const elapsedDays = Math.max(0, Math.floor((Date.now() - firstDate.getTime()) / 86400000));
     const week = Math.floor(elapsedDays / 7);
@@ -81,7 +83,9 @@ Page({
     let progLeft = 0;
     let progTip = '';
     if (progOn && progStart) {
-      const start = new Date(progStart);
+      // 修正时区：把日期字符串当作本地日期 00:00 解析，避免 UTC 偏移导致天数少算
+      const parts = progStart.split('-').map(Number);
+      const start = new Date(parts[0], parts[1] - 1, parts[2]);
       const elapsed = Math.floor((Date.now() - start.getTime()) / 86400000);
       progLeft = Math.max(0, progDays - elapsed);
       progTip = `疗程还剩 ${progLeft} 天，每日 ${progPerDay} 次，请遵医嘱`;

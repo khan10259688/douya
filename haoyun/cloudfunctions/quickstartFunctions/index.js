@@ -104,17 +104,25 @@ const deleteWeightRecord = async (event) => {
   }
 };
 
-// 清空用户全部体重记录
+// 清空用户全部体重记录（分页批量删除，突破 get() 100 条与 remove() 20 条限制）
 const clearWeightRecords = async () => {
   const { OPENID } = cloud.getWXContext();
   try {
-    const existing = await db.collection(WEIGHT_COLLECTION)
-      .where({ _openid: OPENID })
-      .get();
-    for (const doc of existing.data) {
-      await db.collection(WEIGHT_COLLECTION).doc(doc._id).remove();
+    // where().remove() 单次最多删 20 条，循环直到清空
+    let removed = 0;
+    let total = Infinity;
+    while (removed < total) {
+      const cnt = await db.collection(WEIGHT_COLLECTION)
+        .where({ _openid: OPENID })
+        .count();
+      total = cnt.total;
+      if (total === 0) break;
+      const res = await db.collection(WEIGHT_COLLECTION)
+        .where({ _openid: OPENID })
+        .remove();
+      removed += (res.stats && res.stats.removed) || 0;
     }
-    return { success: true };
+    return { success: true, removed };
   } catch (err) {
     return { success: false, error: err.message };
   }
@@ -363,7 +371,7 @@ const deleteToolRecord = async (event) => {
   }
 };
 
-// 清空用户某类工具记录
+// 清空用户某类工具记录（分页批量删除，突破 get() 100 条与 remove() 20 条限制）
 const clearToolRecords = async (event) => {
   const { OPENID } = cloud.getWXContext();
   const { kind } = event;
@@ -371,13 +379,20 @@ const clearToolRecords = async (event) => {
     return { success: false, error: '缺少 kind 参数' };
   }
   try {
-    const existing = await db.collection(TOOL_COLLECTION)
-      .where({ _openid: OPENID, kind })
-      .get();
-    for (const doc of existing.data) {
-      await db.collection(TOOL_COLLECTION).doc(doc._id).remove();
+    let removed = 0;
+    let total = Infinity;
+    while (removed < total) {
+      const cnt = await db.collection(TOOL_COLLECTION)
+        .where({ _openid: OPENID, kind })
+        .count();
+      total = cnt.total;
+      if (total === 0) break;
+      const res = await db.collection(TOOL_COLLECTION)
+        .where({ _openid: OPENID, kind })
+        .remove();
+      removed += (res.stats && res.stats.removed) || 0;
     }
-    return { success: true };
+    return { success: true, removed };
   } catch (err) {
     return { success: false, error: err.message };
   }
@@ -447,7 +462,9 @@ const sendMyCheckReminder = async () => {
       return { success: false, error: '无怀孕记录' };
     }
     const record = res.data[0];
-    const firstDate = new Date(record.firstDay);
+    // 修正时区：日期字符串按本地日期解析，避免 UTC 偏移导致孕周少算
+    const parts = String(record.firstDay).split('-').map(Number);
+    const firstDate = new Date(parts[0], parts[1] - 1, parts[2]);
     if (isNaN(firstDate.getTime())) {
       return { success: false, error: '日期无效' };
     }
@@ -516,7 +533,9 @@ const sendCheckReminders = async () => {
 
     for (const user of allUsers) {
       if (!user.firstDay) continue;
-      const firstDate = new Date(user.firstDay);
+      // 修正时区：日期字符串按本地日期解析，避免 UTC 偏移导致孕周少算
+      const parts = String(user.firstDay).split('-').map(Number);
+      const firstDate = new Date(parts[0], parts[1] - 1, parts[2]);
       if (isNaN(firstDate.getTime())) continue;
       const elapsedDays = Math.floor((now - firstDate) / 86400000);
       const week = Math.floor(elapsedDays / 7);
