@@ -29,6 +29,8 @@ Page({
     babySize: { size: '', emoji: '', desc: '' },
     weekList: [],
     scrollWeekId: '',
+    eggEmoji: '🥚',
+    eggStageText: '',
     alertBanner: null,
     bannerDismissed: false,
     expandedGroups: { overdue: false, upcoming: false, done: false },
@@ -47,6 +49,10 @@ Page({
     ],
     selectedTagIndex: -1,
     feedbackSubmitting: false,
+    showSettingsSheet: false,
+    editName: '',
+    editFirstDay: '',
+    editFirstDayCN: '',
   },
 
   onLoad() {
@@ -210,7 +216,68 @@ Page({
     return { size: '小宝贝', emoji: '👶', desc: '已经准备好和妈妈见面啦', develop: '随时出生' };
   },
 
-  // 日期选择变化
+  // 打开孕期设置抽屉
+  openSettingsSheet() {
+    const { userName, firstDay } = this.data;
+    this.setData({
+      showSettingsSheet: true,
+      editName: userName || '',
+      editFirstDay: firstDay || '',
+      editFirstDayCN: firstDay ? this.formatDateCN(firstDay) : '',
+    });
+  },
+
+  closeSettingsSheet() {
+    this.setData({ showSettingsSheet: false });
+  },
+
+  onEditNameInput(e) {
+    this.setData({ editName: e.detail.value });
+  },
+
+  onEditDateChange(e) {
+    const value = e.detail.value;
+    const parts = value.split('-');
+    this.setData({
+      editFirstDay: value,
+      editFirstDayCN: `${parts[0]}年${parseInt(parts[1])}月${parseInt(parts[2])}日`,
+    });
+  },
+
+  // 格式化显示日期
+  formatDateCN(dateStr) {
+    const parts = dateStr.split('-');
+    return `${parts[0]}年${parseInt(parts[1])}月${parseInt(parts[2])}日`;
+  },
+
+  // 保存设置（昵称+日期一起保存）
+  saveSettings() {
+    const { editName, editFirstDay } = this.data;
+    if (!editName.trim()) {
+      wx.showToast({ title: '请输入昵称', icon: 'none' });
+      return;
+    }
+    if (!editFirstDay) {
+      wx.showToast({ title: '请选择日期', icon: 'none' });
+      return;
+    }
+    const name = editName.trim().slice(0, 10);
+    this.setData({
+      userName: name,
+      firstDay: editFirstDay,
+      showSettingsSheet: false,
+    });
+    wx.setStorageSync('pregnancy_first_day', editFirstDay);
+    wx.setStorageSync('pregnancy_user_name', name);
+    wx.cloud.callFunction({
+      name: 'quickstartFunctions',
+      data: { type: 'savePregnancyDate', firstDay: editFirstDay, userName: name },
+    }).catch(() => {});
+    this.calculatePregnancyInfo();
+    wx.showToast({ title: '已保存', icon: 'success' });
+  },
+
+  // 日期选择变化（欢迎页用）
   onDateChange(e) {
     this.setData({ firstDay: e.detail.value });
   },
@@ -317,6 +384,26 @@ Page({
     const remainingDays = Math.max(0, 280 - elapsedDays);
     const progress = Math.min(100, Math.round((elapsedDays / 280) * 1000) / 10);
 
+    // 鸡蛋破壳阶段：按进度切换 emoji + 描述
+    let eggEmoji = '🥚';
+    let eggStageText = '';
+    if (progress >= 100) {
+      eggEmoji = '🐣';
+      eggStageText = '随时见面啦';
+    } else if (progress >= 85) {
+      eggEmoji = '🐣';
+      eggStageText = '快破壳了 · 还有' + remainingDays + '天';
+    } else if (progress >= 60) {
+      eggEmoji = '🥚';
+      eggStageText = '壳裂' + progress + '% · 还有' + remainingDays + '天';
+    } else if (progress >= 30) {
+      eggEmoji = '🥚';
+      eggStageText = '孵化' + progress + '% · 还有' + remainingDays + '天';
+    } else {
+      eggEmoji = '🥚';
+      eggStageText = '孵化' + progress + '%';
+    }
+
     let period = '';
     let stageEmoji = '🌱';
     if (week < 13) {
@@ -345,6 +432,8 @@ Page({
       'pregnancyInfo.period': period,
       babySize,
       stageEmoji,
+      eggEmoji,
+      eggStageText,
       greetingText,
       blessingText,
       weekList,
@@ -603,38 +692,12 @@ Page({
     } catch (e) {}
   },
 
-  // 点击横幅：请求订阅消息授权，授权后立即发一次提醒，再滚动到产检表
+  // 点击横幅：滚动到产检表
   scrollToChecks() {
-    // 模板ID集中管理于 config.js
-    const TEMPLATE_ID = require('../../config.js').TEMPLATE_CHECK_REMINDER;
-    if (TEMPLATE_ID) {
-      wx.requestSubscribeMessage({
-        tmplIds: [TEMPLATE_ID],
-        success: (res) => {
-          if (res[TEMPLATE_ID] === 'accept') {
-            // 授权成功，立即调云函数发送一次提醒
-            wx.cloud.callFunction({
-              name: 'quickstartFunctions',
-              data: { type: 'sendMyCheckReminder' },
-            }).then((r) => {
-              if (r && r.result && r.result.success) {
-                wx.showToast({ title: '已发送提醒到微信', icon: 'success' });
-              } else {
-                wx.showToast({ title: '已开启提醒', icon: 'success' });
-              }
-            }).catch(() => {
-              wx.showToast({ title: '已开启提醒', icon: 'success' });
-            });
-          }
-        },
-        fail: () => {},
-        complete: () => {
-          wx.pageScrollTo({ scrollTop: 9999, duration: 300 });
-        },
-      });
-    } else {
-      wx.pageScrollTo({ scrollTop: 9999, duration: 300 });
-    }
+    wx.pageScrollTo({
+      scrollTop: 9999,
+      duration: 300,
+    });
   },
 
   // 折叠/展开产检分组

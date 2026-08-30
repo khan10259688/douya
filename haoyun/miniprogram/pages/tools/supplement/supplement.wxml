@@ -24,7 +24,7 @@
   <!-- 叶酸打卡卡 -->
   <view class="card folic-card {{folicPhase}}">
     <view class="card-left">
-      <view class="card-icon">💊</view>
+      <view class="card-icon">🍃</view>
     </view>
     <view class="card-body">
       <text class="card-title">叶酸</text>
@@ -38,7 +38,7 @@
   <!-- 孕酮打卡卡 -->
   <view class="card prog-card {{progesteroneOn ? '' : 'prog-off'}}">
     <view class="card-left">
-      <view class="card-icon">🟡</view>
+      <view class="card-icon">💛</view>
     </view>
     <view class="card-body">
       <view class="prog-head">

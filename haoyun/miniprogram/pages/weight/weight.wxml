@@ -42,21 +42,22 @@
     <view class="gain-band" wx:if="{{registerWeight > 0 && totalGain}}">
       <view class="gain-bar">
         <view class="gain-zone"></view>
-        <view class="gain-marker" style="left:{{gainPct}}%"></view>
+        <view class="gain-marker" style="left:{{gainPct}}%;"></view>
       </view>
       <view class="gain-info-row">
-        <text class="gain-legend">{{gainTarget}}</text>
-        <text class="gain-speed {{gainSpeedClass}}">{{gainSpeed}}</text>
+        <text class="gain-legend">{{gainTarget}}{{bmiCategory ? '（孕前BMI ' + bmiCategory + '）' : ''}}</text>
+        <text class="gain-current">已增重 {{totalGain}}</text>
       </view>
+      <text class="gain-hint">数值仅供参考，个体差异大，请以产检医生评估为准</text>
     </view>
     <view class="gain-tip" wx:if="{{registerWeight <= 0}}" bindtap="openRegisterSheet">
-      <text>📋 设置建档体重，开启孕期增重追踪 ›</text>
+      <text>📋 设置建档体重和身高，开启个性化增重追踪 ›</text>
     </view>
   </view>
 
   <!-- 记录入口：大按钮 -->
   <button class="record-btn" bindtap="openSheet">
-    <text class="record-btn-icon">⚖️</text>
+    <image class="record-btn-icon" src="../../images/icons/weight.svg" mode="aspectFit" />
     <text class="record-btn-text">记录今日体重</text>
   </button>
 
@@ -168,8 +169,12 @@
         </view>
       </picker>
       <view class="input-row">
-        <input class="weight-input" type="digit" placeholder="输入建档时体重" value="{{regWeightInput}}" bindinput="onRegWeightInput" />
+        <input class="weight-input" type="digit" placeholder="建档时体重" value="{{regWeightInput}}" bindinput="onRegWeightInput" />
         <text class="input-unit">kg</text>
+      </view>
+      <view class="input-row">
+        <input class="weight-input" type="digit" placeholder="身高（选填，用于个性化增重建议）" value="{{regHeightInput}}" bindinput="onRegHeightInput" />
+        <text class="input-unit">cm</text>
       </view>
       <button class="sheet-save-btn" bindtap="saveRegisterInfo">保存</button>
     </view>

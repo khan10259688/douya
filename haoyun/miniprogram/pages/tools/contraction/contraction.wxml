@@ -1,42 +1,101 @@
 <view class="container">
   <!-- 提示卡 -->
   <view class="card tip-card">
-    <text class="card-title">⏱️ 什么时候去医院？</text>
-    <text class="tip-line">宫缩变得规律：约每 5 分钟一次、每次持续 1 分钟、连续 1 小时（5-1-1 法则），或出现破水、见红，应及时出发去医院。</text>
+    <view class="tip-header">
+      <view class="tip-icon">
+        <text class="tip-emoji">⏱️</text>
+      </view>
+      <view class="tip-title-wrap">
+        <text class="card-title">什么时候去医院？</text>
+        <text class="card-sub">5-1-1 法则参考</text>
+      </view>
+    </view>
+    <view class="tip-body">
+      <view class="rule-grid">
+        <view class="rule-item">
+          <view class="rule-num">5</view>
+          <text class="rule-unit">分钟</text>
+          <text class="rule-label">间隔</text>
+        </view>
+        <view class="rule-divider"></view>
+        <view class="rule-item">
+          <view class="rule-num">1</view>
+          <text class="rule-unit">分钟</text>
+          <text class="rule-label">持续</text>
+        </view>
+        <view class="rule-divider"></view>
+        <view class="rule-item">
+          <view class="rule-num">1</view>
+          <text class="rule-unit">小时</text>
+          <text class="rule-label">连续</text>
+        </view>
+      </view>
+      <text class="tip-text">宫缩规律接近 5-1-1，或出现破水、见红，应及时出发去医院。</text>
+    </view>
   </view>
 
   <!-- 计时器 -->
   <view class="timer-card {{running ? 'timer-running' : ''}}">
-    <text class="timer-state">{{running ? '宫缩进行中…' : '宫缩来了？'}}</text>
-    <view class="big-time">{{elapsedText}}</view>
-    <view class="timer-btn" bindtap="onTapMain">
-      <text class="timer-btn-text">{{running ? '结束这次宫缩' : '开始计时'}}</text>
+    <view class="timer-glow"></view>
+    <view class="timer-content">
+      <view class="timer-state-row">
+        <view class="timer-state-dot {{running ? 'dot-pulse' : ''}}"></view>
+        <text class="timer-state">{{running ? '宫缩进行中' : '宫缩来了？'}}</text>
+      </view>
+      <view class="big-time">{{elapsedText}}</view>
+      <view class="timer-btn {{running ? 'timer-btn-stop' : ''}}" bindtap="onTapMain">
+        <text class="timer-btn-emoji">{{running ? '⏹' : '▶'}}</text>
+        <text class="timer-btn-text">{{running ? '结束这次宫缩' : '开始计时'}}</text>
+      </view>
     </view>
   </view>
 
   <!-- 规律预警 -->
   <view class="alert-card" wx:if="{{patternAlert}}">
-    <text class="alert-emoji">⚠️</text>
-    <text class="alert-text">宫缩已接近 5-1-1 规律，请做好出发准备</text>
+    <view class="alert-icon-wrap">
+      <text class="alert-emoji">⚠️</text>
+    </view>
+    <view class="alert-body">
+      <text class="alert-title">规律宫缩预警</text>
+      <text class="alert-text">已接近 5-1-1 规律，请做好出发准备</text>
+    </view>
   </view>
 
   <!-- 今日宫缩列表 -->
   <view class="card" wx:if="{{list.length > 0}}">
     <view class="card-row">
-      <text class="card-title">📋 今日宫缩（{{list.length}} 次）</text>
-      <text class="clear-btn" bindtap="clearToday">清空</text>
+      <view class="card-title-wrap">
+        <view class="card-title-icon">
+          <text class="card-title-emoji">📋</text>
+        </view>
+        <text class="card-title">今日宫缩</text>
+      </view>
+      <view class="today-badge">{{list.length}} 次</view>
     </view>
     <view class="ct-item" wx:for="{{list}}" wx:key="id">
-      <view class="ct-index">#{{item.index}}</view>
+      <view class="ct-index">{{item.index}}</view>
       <view class="ct-main">
         <text class="ct-start">{{item.start}} 开始</text>
-        <text class="ct-meta">持续 {{item.durationText}} · 距上次 {{item.intervalText}}</text>
+        <view class="ct-meta-row">
+          <view class="ct-meta-item">
+            <text class="ct-meta-label">持续</text>
+            <text class="ct-meta-value">{{item.durationText}}</text>
+          </view>
+          <view class="ct-meta-sep"></view>
+          <view class="ct-meta-item">
+            <text class="ct-meta-label">距上次</text>
+            <text class="ct-meta-value">{{item.intervalText}}</text>
+          </view>
+        </view>
       </view>
     </view>
+    <view class="clear-btn" bindtap="clearToday">清空今日记录</view>
   </view>
 
   <view class="empty" wx:if="{{list.length === 0}}">
-    <text class="empty-emoji">⏱️</text>
+    <view class="empty-emoji-wrap">
+      <text class="empty-emoji">⏱️</text>
+    </view>
     <text class="empty-text">今天还没有宫缩记录</text>
     <text class="empty-sub">感到肚子发紧发硬时点击"开始计时"</text>
   </view>

@@ -44,7 +44,7 @@
 
     <!-- 本月重点营养素说明 -->
     <view class="card nutrient-card">
-      <text class="card-title">💊 本月重点营养素</text>
+      <text class="card-title">🥬 本月重点营养素</text>
       <view class="nutrient-list">
         <view class="nutrient-item" wx:for="{{nutrients}}" wx:key="name">
           <text class="nutrient-name">{{item.name}}</text>

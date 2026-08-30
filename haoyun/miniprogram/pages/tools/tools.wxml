@@ -3,7 +3,8 @@
   <view class="tool-grid">
     <view class="tool-card" wx:for="{{tools}}" wx:key="title" data-url="{{item.url}}" bindtap="goTool">
       <view class="tool-icon">
-        <text class="tool-emoji">{{item.emoji}}</text>
+        <image wx:if="{{item.icon}}" class="tool-icon-img" src="{{item.icon}}" mode="aspectFit" />
+        <text wx:else class="tool-emoji">{{item.emoji}}</text>
       </view>
       <view class="tool-info">
         <text class="tool-title">{{item.title}}</text>

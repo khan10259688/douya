@@ -3,8 +3,8 @@ const REGISTER_KEY = 'pregnancy_register_weight';
 
 // 记录类型定义
 const RECORD_TYPES = [
-  { key: 'morning', tag: '推荐', emoji: '🌅', label: '晨起空腹', desc: '适合看长期趋势' },
-  { key: 'daytime', tag: '补充', emoji: '☀️', label: '日间任意时段', desc: '仅作参考' },
+  { key: 'morning', tag: '推荐', emoji: '🍳', label: '晨起空腹', desc: '适合看长期趋势' },
+  { key: 'daytime', tag: '补充', emoji: '🍚', label: '日间任意时段', desc: '仅作参考' },
 ];
 
 // 归一化记录类型（兼容旧的五时段数据：morning→晨起，其余→日间）
@@ -237,10 +237,14 @@ Page({
     tapIndex: null,
     registerWeight: 0,
     registerDate: '',
+    registerHeight: 0,
+    bmiCategory: '',
     totalGain: '',
     gainClass: '',
+    gainMaxKg: 16,
     showRegisterSheet: false,
     regWeightInput: '',
+    regHeightInput: '',
     regDate: '',
     regDateCN: '',
     showDownloadModal: false,
@@ -360,51 +364,36 @@ Page({
     const daytimeFluct = this.computeDaytimeFluct(records);
 
     // 相对建档体重的总增重（以最新晨重为准）
+    // 注：只呈现事实和医学参考范围，不做"偏快/偏慢"评判，避免给孕妇制造焦虑
     let totalGain = '';
     let gainClass = '';
     let gainPct = 0;
     let gainTarget = '';
-    let gainSpeed = '';
-    let gainSpeedClass = '';
+    let gainMaxKg = 16;
+    let gainMinKg = 11.5;
+    let bmiCategory = '';
     if (this.data.registerWeight > 0 && latestWeight > 0) {
       const gain = +(latestWeight - this.data.registerWeight).toFixed(1);
       totalGain = gain > 0 ? `+${gain.toFixed(1)}` : gain.toFixed(1);
       gainClass = gain > 0 ? 'gain-up' : (gain < 0 ? 'gain-down' : '');
-      // 按孕期增重建议 11.5~16kg（孕前 BMI 正常）绘制进度
-      gainPct = Math.min(100, Math.max(0, (gain / 16) * 100));
 
-      // 分阶段应增重参考（IOM/中国营养学会）
-      // 读取孕周
-      const firstDate = new Date(wx.getStorageSync('pregnancy_first_day') || this.data.registerDate);
-      let week = 0;
-      if (!isNaN(firstDate.getTime())) {
-        const elapsedDays = Math.max(0, Math.floor((Date.now() - firstDate.getTime()) / 86400000));
-        week = Math.floor(elapsedDays / 7);
+      // 根据身高+建档体重算 BMI，按 IOM 指南确定增重参考范围
+      const height = this.data.registerHeight || 0;
+      let bmiMin = 11.5, bmiMax = 16; // 默认正常 BMI
+      if (height > 0) {
+        const bmi = this.data.registerWeight / Math.pow(height / 100, 2);
+        if (bmi < 18.5) { bmiMin = 12.5; bmiMax = 18; bmiCategory = '偏瘦'; }
+        else if (bmi < 24) { bmiMin = 11.5; bmiMax = 16; bmiCategory = '正常'; }
+        else if (bmi < 28) { bmiMin = 7; bmiMax = 11.5; bmiCategory = '超重'; }
+        else { bmiMin = 5; bmiMax = 9; bmiCategory = '肥胖'; }
       }
-      // 孕早期(0-12周)约1-2kg，孕中期(13-27周)每周+0.4kg，孕晚期(28-40周)每周+0.5kg
-      let expected;
-      if (week <= 12) {
-        expected = Math.max(0.5, week * 0.15);
-      } else if (week <= 27) {
-        expected = 1.8 + (week - 12) * 0.4;
-      } else {
-        expected = 1.8 + 15 * 0.4 + (week - 27) * 0.5;
-      }
-      expected = +expected.toFixed(1);
-      gainTarget = `本周应增重约 ${expected} kg`;
+      gainMaxKg = bmiMax;
+      gainMinKg = bmiMin;
+      // 进度条只展示当前增重占推荐范围的比例，不做评判
+      gainPct = Math.min(100, Math.max(0, (gain / bmiMax) * 100));
 
-      // 速度评估：实际 ±1.5kg 以内为正常
-      const diff = gain - expected;
-      if (diff > 1.5) {
-        gainSpeed = `偏快（+${diff.toFixed(1)}kg）`;
-        gainSpeedClass = 'speed-fast';
-      } else if (diff < -1.5) {
-        gainSpeed = `偏慢（${diff.toFixed(1)}kg）`;
-        gainSpeedClass = 'speed-slow';
-      } else {
-        gainSpeed = '正常';
-        gainSpeedClass = 'speed-ok';
-      }
+      // 中性文案：只展示参考范围，不评判速度
+      gainTarget = `孕期参考 ${bmiMin}~${bmiMax}kg`;
     }
 
     this.setData({
@@ -420,8 +409,9 @@ Page({
       gainClass,
       gainPct,
       gainTarget,
-      gainSpeed,
-      gainSpeedClass,
+      gainMaxKg,
+      gainMinKg,
+      bmiCategory,
       hasRecords: records.length > 0,
       chartDays,
       tapIndex: null,
@@ -496,6 +486,7 @@ Page({
         this.setData({
           registerWeight: info.weight,
           registerDate: info.date || '',
+          registerHeight: info.height || 0,
         });
       }
     } catch (err) {}
@@ -510,19 +501,19 @@ Page({
         data: { type: 'getUserData' },
       });
       if (!result || !result.success || !result.data) return;
-      const { registerWeight, registerDate } = result.data;
+      const { registerWeight, registerDate, registerHeight } = result.data;
       if (registerWeight > 0) {
-        const changed = registerWeight !== this.data.registerWeight || registerDate !== this.data.registerDate;
+        const changed = registerWeight !== this.data.registerWeight || registerDate !== this.data.registerDate || (registerHeight || 0) !== this.data.registerHeight;
         if (changed) {
-          this.setData({ registerWeight, registerDate: registerDate || '' });
+          this.setData({ registerWeight, registerDate: registerDate || '', registerHeight: registerHeight || 0 });
           try {
-            wx.setStorageSync(REGISTER_KEY, { weight: registerWeight, date: registerDate || '' });
+            wx.setStorageSync(REGISTER_KEY, { weight: registerWeight, date: registerDate || '', height: registerHeight || 0 });
           } catch (err) {}
           this.renderRecords(this.readLocalRecords());
         }
       } else if (this.data.registerWeight > 0) {
         // 云端没有、本地有 → 补传云端
-        this.uploadRegisterInfo(this.data.registerWeight, this.data.registerDate);
+        this.uploadRegisterInfo(this.data.registerWeight, this.data.registerDate, this.data.registerHeight);
       }
     } catch (err) {
       // 静默降级
@@ -530,10 +521,10 @@ Page({
   },
 
   // 上传建档体重到云端
-  uploadRegisterInfo(weight, date) {
+  uploadRegisterInfo(weight, date, height) {
     wx.cloud.callFunction({
       name: 'quickstartFunctions',
-      data: { type: 'saveRegisterWeight', registerWeight: weight, registerDate: date },
+      data: { type: 'saveRegisterWeight', registerWeight: weight, registerDate: date, registerHeight: height || 0 },
     }).catch((err) => {
       console.warn('建档体重上传云端失败', err);
     });
@@ -541,10 +532,11 @@ Page({
 
   // 打开建档体重设置抽屉
   openRegisterSheet() {
-    const { registerWeight, registerDate, todayISO, today } = this.data;
+    const { registerWeight, registerDate, registerHeight, todayISO, today } = this.data;
     this.setData({
       showRegisterSheet: true,
       regWeightInput: registerWeight > 0 ? String(registerWeight) : '',
+      regHeightInput: registerHeight > 0 ? String(registerHeight) : '',
       regDate: registerDate || todayISO,
       regDateCN: registerDate ? this.formatDateCN(registerDate) : today,
     });
@@ -578,10 +570,17 @@ Page({
     this.setData({ regWeightInput: value });
   },
 
+  onRegHeightInput(e) {
+    let value = e.detail.value;
+    value = value.replace(/[^\d.]/g, '');
+    this.setData({ regHeightInput: value });
+  },
+
   // 保存建档体重
   saveRegisterInfo() {
-    const { regWeightInput, regDate } = this.data;
+    const { regWeightInput, regHeightInput, regDate } = this.data;
     const weight = parseFloat(regWeightInput);
+    const height = parseFloat(regHeightInput);
 
     if (!regWeightInput || isNaN(weight) || weight <= 0) {
       wx.showToast({ title: '请输入有效体重', icon: 'none' });
@@ -593,16 +592,24 @@ Page({
     }
 
     const w = +weight.toFixed(1);
+    const h = (height && !isNaN(height) && height > 0) ? Math.round(height) : 0;
+    if (regHeightInput && (height < 100 || height > 250)) {
+      wx.showToast({ title: '身高数值不太合理', icon: 'none' });
+      return;
+    }
+
     this.setData({
       registerWeight: w,
       registerDate: regDate,
+      registerHeight: h,
       showRegisterSheet: false,
       regWeightInput: '',
+      regHeightInput: '',
     });
     try {
-      wx.setStorageSync(REGISTER_KEY, { weight: w, date: regDate });
+      wx.setStorageSync(REGISTER_KEY, { weight: w, date: regDate, height: h });
     } catch (err) {}
-    this.uploadRegisterInfo(w, regDate);
+    this.uploadRegisterInfo(w, regDate, h);
     this.renderRecords(this.readLocalRecords());
     wx.showToast({ title: '已保存 ✓', icon: 'success' });
   },
@@ -826,6 +833,13 @@ Page({
         wx.showToast({ title: '已清空', icon: 'success' });
       },
     });
+  },
+
+  onShareAppMessage() {
+    return {
+      title: '🌸 好孕日记 · 陪伴你的孕期每一天',
+      path: '/pages/home/home',
+    };
   },
 
   // ========== 趋势图 ==========

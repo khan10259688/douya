@@ -42,6 +42,11 @@
   font-size: 44rpx;
 }
 
+.tool-icon-img {
+  width: 56rpx;
+  height: 56rpx;
+}
+
 .tool-info {
   flex: 1;
   min-width: 0;

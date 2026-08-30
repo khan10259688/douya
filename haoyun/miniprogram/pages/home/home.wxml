@@ -5,24 +5,26 @@
       <view class="welcome-circle"></view>
       <image class="welcome-icon" src="../../images/header-icon.svg" mode="aspectFit" />
     </view>
-    <text class="welcome-title">🌸 好孕日记</text>
-    <text class="welcome-subtitle">记录孕期点滴，陪伴幸福时光</text>
+    <text class="welcome-title">好孕日记</text>
+    <view class="welcome-flower">🌸</view>
+    <text class="welcome-subtitle">记录孕期点滴 · 陪伴幸福时光</text>
 
     <view class="card start-card">
       <text class="start-label">嗨，怎么称呼你？</text>
       <text class="start-hint">给自己取个暖暖的昵称吧</text>
-      <input class="name-input" placeholder="例如：小甜心、准妈妈、乐乐妈..." maxlength="10" value="{{userName}}" bindinput="onNameInput" />
+      <input class="name-input" placeholder="小甜心、准妈妈、乐乐妈…" maxlength="10" value="{{userName}}" bindinput="onNameInput" />
       <view class="start-divider"></view>
       <text class="start-label">怀孕第一天</text>
-      <text class="start-hint">即末次月经的第一天</text>
+      <text class="start-hint">末次月经的第一天，用于计算孕周</text>
       <picker mode="date" value="{{firstDay}}" start="2020-01-01" end="{{today}}" bindchange="onDateChange">
         <view class="date-selector {{firstDay ? 'active' : ''}}">
           <image class="date-icon" src="../../images/calendar.svg" mode="aspectFit" />
           <text class="date-text">{{firstDay || '点击选择日期'}}</text>
+          <text class="date-arrow">›</text>
         </view>
       </picker>
       <button class="btn-start" bindtap="saveDate" disabled="{{!firstDay || !userName}}">
-        <text wx:if="{{!firstDay || !userName}}">请填写信息后开始</text>
+        <text wx:if="{{!firstDay || !userName}}">填写信息后开始</text>
         <text wx:if="{{firstDay && userName}}">✨ 开始记录</text>
       </button>
     </view>
@@ -50,9 +52,7 @@
             <text class="hero-greeting">{{greetingText}}，{{userName}}</text>
             <text class="hero-blessing">{{blessingText}}</text>
           </view>
-          <picker mode="date" value="{{firstDay}}" start="2020-01-01" end="{{today}}" bindchange="onFirstDayChange">
-            <view class="hero-edit-btn">修改</view>
-          </picker>
+          <view class="hero-settings-btn" catchtap="openSettingsSheet">⚙</view>
         </view>
         <view class="hero-week">
           <text class="hero-week-num">{{pregnancyInfo.week}}</text>
@@ -91,11 +91,12 @@
         <text class="quick-value">{{pregnancyInfo.period}}</text>
       </view>
       <view class="quick-item">
-        <view class="quick-icon quick-icon-purple">
-          <text class="quick-emoji">🎂</text>
+        <view class="quick-icon quick-icon-purple egg-icon-wrap">
+          <text class="quick-emoji">{{eggEmoji}}</text>
         </view>
         <text class="quick-label">预产期</text>
         <text class="quick-value">{{pregnancyInfo.dueDate}}</text>
+        <text class="quick-sub-value" wx:if="{{eggStageText}}">{{eggStageText}}</text>
       </view>
       <view class="quick-item">
         <view class="quick-icon quick-icon-orange">
@@ -298,6 +299,30 @@
         {{feedbackSubmitting ? '提交中...' : '提交反馈'}}
       </button>
       <view class="fb-cancel" bindtap="closeFeedbackSheet">取消</view>
+    </view>
+  </view>
+
+  <!-- 孕期设置抽屉 -->
+  <view class="fb-mask" wx:if="{{showSettingsSheet}}" bindtap="closeSettingsSheet">
+    <view class="fb-sheet" catchtap="noop">
+      <view class="fb-handle"></view>
+      <text class="fb-title">孕期设置</text>
+      <text class="fb-sub">修改你的昵称和怀孕日期</text>
+
+      <view class="settings-field">
+        <text class="field-label">昵称</text>
+        <input class="field-input" placeholder="给自己取个暖暖的昵称" maxlength="10" value="{{editName}}" bindinput="onEditNameInput" />
+      </view>
+
+      <picker mode="date" value="{{editFirstDay}}" start="2020-01-01" end="{{today}}" bindchange="onEditDateChange">
+        <view class="settings-date-row">
+          <text class="field-label">怀孕第一天</text>
+          <text class="settings-date-value">{{editFirstDayCN || '点击选择'}}</text>
+          <text class="settings-date-arrow">›</text>
+        </view>
+      </picker>
+
+      <button class="fb-submit-btn" bindtap="saveSettings">保存设置</button>
     </view>
   </view>
 </view>

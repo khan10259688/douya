@@ -15,9 +15,9 @@ const DIET_OPTIONS = [
 
 // 三餐展示配置
 const MEAL_KEYS = [
-  { key: 'breakfast', label: '早餐', emoji: '🌅', accent: 'breakfast' },
-  { key: 'lunch', label: '午餐', emoji: '☀️', accent: 'lunch' },
-  { key: 'dinner', label: '晚餐', emoji: '🌙', accent: 'dinner' },
+  { key: 'breakfast', label: '早餐', emoji: '🍳', accent: 'breakfast' },
+  { key: 'lunch', label: '午餐', emoji: '🍚', accent: 'lunch' },
+  { key: 'dinner', label: '晚餐', emoji: '🥣', accent: 'dinner' },
 ];
 
 Page({

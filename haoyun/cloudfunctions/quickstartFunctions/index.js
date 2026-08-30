@@ -140,6 +140,7 @@ const getUserData = async () => {
           completedChecks: record.completedChecks || [],
           registerWeight: record.registerWeight || 0,
           registerDate: record.registerDate || '',
+          registerHeight: record.registerHeight || 0,
         },
       };
     }
@@ -238,7 +239,7 @@ const saveCompletedChecks = async (event) => {
 // 保存建档体重（存入孕期档案文档，与 firstDay 同集合）
 const saveRegisterWeight = async (event) => {
   const { OPENID } = cloud.getWXContext();
-  const { registerWeight, registerDate } = event;
+  const { registerWeight, registerDate, registerHeight } = event;
 
   if (!registerWeight) {
     return { success: false, error: '缺少体重参数' };
@@ -252,6 +253,7 @@ const saveRegisterWeight = async (event) => {
     const data = {
       registerWeight,
       registerDate: registerDate || '',
+      registerHeight: registerHeight || 0,
       updatedAt: new Date(),
     };
 

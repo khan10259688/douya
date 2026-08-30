@@ -4,10 +4,10 @@ const toolRecords = require('../../utils/tool-records.js');
 Page({
   data: {
     tools: [
-      { emoji: '👶', title: '数胎动', desc: '宝宝今天还好吗？', url: '/pages/tools/kick/kick' },
+      { icon: '/images/icons/kick.svg', title: '数胎动', desc: '宝宝今天还好吗？', url: '/pages/tools/kick/kick' },
       { emoji: '⏱️', title: '宫缩计时', desc: '什么时候该去医院', url: '/pages/tools/contraction/contraction' },
-      { emoji: '💊', title: '营养打卡', desc: '别忘了吃叶酸哦', url: '/pages/tools/supplement/supplement' },
-      { emoji: '🎒', title: '待产包', desc: '提前备齐不慌乱', url: '/pages/tools/bag/bag' },
+      { emoji: '🍃', title: '营养打卡', desc: '别忘了吃叶酸哦', url: '/pages/tools/supplement/supplement' },
+      { emoji: '🧳', title: '待产包', desc: '提前备齐不慌乱', url: '/pages/tools/bag/bag' },
       { emoji: '📖', title: '孕期日记', desc: '写给宝宝的情书', url: '/pages/tools/diary/diary' },
     ],
     kickToday: 0,
