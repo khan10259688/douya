@@ -65,12 +65,12 @@ Page({
     const records = data.records || {};
     const todayRecord = records[today] || {};
 
-    // 叶酸阶段判断
+    // 叶酸阶段判断（不限打卡，仅文案区分）
     let folicPhase = 'active';
     let folicTip = '';
     if (this.data.week >= FOLIC_STOP_WEEK) {
       folicPhase = 'review';
-      folicTip = '已满孕12周，建议遵医嘱评估是否继续服用叶酸';
+      folicTip = '已满12周，请遵医嘱评估是否继续服用叶酸';
     } else {
       folicTip = `孕早期（0-12周）是补叶酸关键期，还剩 ${(FOLIC_STOP_WEEK - this.data.week)} 周`;
     }
@@ -153,12 +153,8 @@ Page({
     });
   },
 
-  // 打卡叶酸
+  // 打卡叶酸（不限孕周，12周后仍可打卡，仅文案提示遵医嘱）
   toggleFolic() {
-    if (this.data.folicPhase === 'review') {
-      wx.showToast({ title: '已过建议服用期，请遵医嘱', icon: 'none' });
-      return;
-    }
     const data = this.readData();
     const records = data.records || {};
     const today = this.data.today;

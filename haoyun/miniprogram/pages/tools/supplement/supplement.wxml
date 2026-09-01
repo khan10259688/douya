@@ -69,7 +69,7 @@
 
   <!-- 说明 -->
   <view class="note">
-    <view class="note-line">· 叶酸建议孕前3个月至孕12周服用，12周后遵医嘱评估</view>
+    <view class="note-line">· 叶酸建议孕前3个月至孕12周服用，12周后遵医嘱评估是否继续</view>
     <view class="note-line">· 孕酮须严格按医生处方服用，不可自行增减</view>
     <view class="note-line">· 本打卡仅为日常提醒工具，不构成医疗建议</view>
   </view>
