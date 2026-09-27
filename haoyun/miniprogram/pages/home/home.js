@@ -172,15 +172,15 @@ Page({
   // 根据孕周返回宝宝大小参照（CRL头臀长/身长数据来源：WHO fetal growth standards）
   getBabySize(week) {
     const sizes = [
-      { max: 4, size: '芝麻粒', emoji: '🫘', desc: '约0.1cm，刚刚着床', develop: '正在分裂成胚胎' },
-      { max: 5, size: '苹果籽', emoji: '🫘', desc: '约0.2cm', develop: '神经管开始形成' },
+      { max: 4, size: '芝麻粒', emoji: '🟤', desc: '约0.1cm，刚刚着床', develop: '正在分裂成胚胎' },
+      { max: 5, size: '苹果籽', emoji: '🟤', desc: '约0.2cm', develop: '神经管开始形成' },
       { max: 6, size: '小扁豆', emoji: '🫘', desc: '约0.5cm', develop: '心脏开始跳动' },
       { max: 7, size: '蓝莓', emoji: '🫐', desc: '约1cm', develop: '四肢芽出现' },
       { max: 8, size: '小芸豆', emoji: '🫘', desc: '约1.6cm', develop: '手指脚趾雏形形成' },
       { max: 9, size: '葡萄', emoji: '🍇', desc: '约2.3cm', develop: '主要器官基本成型' },
       { max: 10, size: '金桔', emoji: '🍊', desc: '约3.1cm', develop: '能吞咽和踢腿' },
       { max: 11, size: '小柠檬', emoji: '🍋', desc: '约4cm', develop: '指纹开始形成' },
-      { max: 12, size: '李子', emoji: '🫐', desc: '约5.4cm', develop: '有了反射动作' },
+      { max: 12, size: '李子', emoji: '🟣', desc: '约5.4cm', develop: '有了反射动作' },
       { max: 13, size: '豌豆荚', emoji: '🫛', desc: '约7.4cm', develop: '能皱眉、吸吮' },
       { max: 14, size: '柠檬', emoji: '🍋', desc: '约8.7cm', develop: '长出细毛（胎毛）' },
       { max: 15, size: '苹果', emoji: '🍎', desc: '约10cm', develop: '能感知光线' },
@@ -190,14 +190,14 @@ Page({
       { max: 19, size: '芒果', emoji: '🥭', desc: '约15cm', develop: '胎动更明显' },
       { max: 20, size: '香蕉', emoji: '🍌', desc: '约16cm', develop: '能吞咽羊水' },
       { max: 21, size: '胡萝卜', emoji: '🥕', desc: '约27cm', develop: '眉毛长出来了' },
-      { max: 22, size: '木瓜', emoji: '🍈', desc: '约28cm', develop: '嘴唇更清晰' },
+      { max: 22, size: '木瓜', emoji: '🟠', desc: '约28cm', develop: '嘴唇更清晰' },
       { max: 23, size: '大芒果', emoji: '🥭', desc: '约29cm', develop: '能听到妈妈声音' },
       { max: 24, size: '玉米', emoji: '🌽', desc: '约30cm', develop: '肺部血管发育' },
-      { max: 25, size: '白萝卜', emoji: '🥬', desc: '约34cm', develop: '能抓握' },
-      { max: 26, size: '大葱', emoji: '🥬', desc: '约36cm', develop: '眼睛能睁开' },
+      { max: 25, size: '白萝卜', emoji: '🤍', desc: '约34cm', develop: '能抓握' },
+      { max: 26, size: '大葱', emoji: '🌿', desc: '约36cm', develop: '眼睛能睁开' },
       { max: 27, size: '花椰菜', emoji: '🥦', desc: '约37cm', develop: '大脑快速发育' },
       { max: 28, size: '大茄子', emoji: '🍆', desc: '约38cm', develop: '能做梦（REM睡眠）' },
-      { max: 29, size: '冬瓜', emoji: '🥒', desc: '约39cm', develop: '肌肉和肺在成熟' },
+      { max: 29, size: '冬瓜', emoji: '🟢', desc: '约39cm', develop: '肌肉和肺在成熟' },
       { max: 30, size: '大白菜', emoji: '🥬', desc: '约40cm', develop: '能调节体温' },
       { max: 31, size: '椰子', emoji: '🥥', desc: '约41cm', develop: '神经系统更完善' },
       { max: 32, size: '菠萝', emoji: '🍍', desc: '约42cm', develop: '指甲长齐了' },
@@ -205,7 +205,7 @@ Page({
       { max: 34, size: '哈密瓜', emoji: '🍈', desc: '约45cm', develop: '中枢神经成熟' },
       { max: 35, size: '南瓜', emoji: '🎃', desc: '约46cm', develop: '肾脏发育完成' },
       { max: 36, size: '小西瓜', emoji: '🍉', desc: '约47cm', develop: '肺部基本成熟' },
-      { max: 37, size: '大冬瓜', emoji: '🥬', desc: '约48cm', develop: '算足月了' },
+      { max: 37, size: '大冬瓜', emoji: '🟩', desc: '约48cm', develop: '算足月了' },
       { max: 38, size: '大西瓜', emoji: '🍉', desc: '约49cm', develop: '准备好出生' },
       { max: 39, size: '大西瓜', emoji: '🍉', desc: '约50cm', develop: '随时可能报到' },
       { max: 40, size: '大西瓜', emoji: '🍉', desc: '约51cm，随时准备出来啦', develop: '准备好和妈妈见面啦' },
@@ -737,15 +737,30 @@ Page({
       '今天有没有想我呀？',
       '我在这边偷偷打哈欠～',
       '妈妈的每一次心跳我都听得到',
+      '妈妈别担心，我长得可好啦',
+      '今天妈妈的心情怎么样呀？',
+      '我在学踢腿呢，等下让妈妈感觉到',
+      '妈妈的歌声真好听，再来一首嘛',
+      '我在练习吞咽，准备出来吃奶啦',
+      '妈妈摸肚皮的时候我就知道是你在陪我',
+      '今天有没有好好吃饭呀？我也要营养的',
+      '我在悄悄长手指头啦，好神奇',
+      '妈妈休息的时候我也在睡哦，一起加油',
+      '再等等我哦，出来给妈妈一个大大的拥抱',
     ];
+    // 宝宝口吻的成长播报，把科普信息转化为宝宝自述
+    const dev = this.data.babySize.develop || '在悄悄长大';
+    const size = this.data.babySize.size || '小宝贝';
+    const week = this.data.pregnancyInfo.week;
+    const left = this.data.pregnancyInfo.remainingDays;
     const tips = [
-      `你知道吗？宝宝这周${this.data.babySize.develop || '在悄悄长大'}`,
-      `宝宝现在像一颗${this.data.babySize.size || '小宝贝'}`,
-      `孕${this.data.pregnancyInfo.week}周啦，离预产期还有${this.data.pregnancyInfo.remainingDays}天`,
-      '孕期保持好心情，宝宝也能感受到哦',
-      '每天和宝宝说说话，ta 能听到的',
+      `妈妈，这周我${dev}哦`,
+      `我现在像一颗${size}那么大啦`,
+      `我已经${week}周啦，还有${left}天就能见到妈妈了`,
+      `妈妈开心我就开心，你的心情我都感受得到哦`,
+      `妈妈和我说说话吧，我听得到你的声音呢`,
     ];
-    const useQuote = Math.random() < 0.5;
+    const useQuote = Math.random() < 0.7;
     const text = useQuote
       ? quotes[Math.floor(Math.random() * quotes.length)]
       : tips[Math.floor(Math.random() * tips.length)];
